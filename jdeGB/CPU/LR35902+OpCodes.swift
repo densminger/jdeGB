@@ -943,6 +943,172 @@ extension LR35902 {
 			flag_h = false
 			flag_c = false
 			cycles = 1
+		case 0xB0:	// OR B
+			a = a | b
+			flag_z = (a == 0)
+			flag_n = false
+			flag_h = false
+			flag_c = false
+			cycles = 1
+		case 0xB1:	// OR C
+			a = a | c
+			flag_z = (a == 0)
+			flag_n = false
+			flag_h = false
+			flag_c = false
+			cycles = 1
+		case 0xB2:	// OR D
+			a = a | d
+			flag_z = (a == 0)
+			flag_n = false
+			flag_h = false
+			flag_c = false
+			cycles = 1
+		case 0xB3:	// OR E
+			a = a | e
+			flag_z = (a == 0)
+			flag_n = false
+			flag_h = false
+			flag_c = false
+			cycles = 1
+		case 0xB4:	// OR H
+			a = a | h
+			flag_z = (a == 0)
+			flag_n = false
+			flag_h = false
+			flag_c = false
+			cycles = 1
+		case 0xB5:	// OR L
+			a = a | l
+			flag_z = (a == 0)
+			flag_n = false
+			flag_h = false
+			flag_c = false
+			cycles = 1
+		case 0xB6:	// OR (HL)
+			a = a | read8(hl)
+			flag_z = (a == 0)
+			flag_n = false
+			flag_h = false
+			flag_c = false
+			cycles = 2
+		case 0xB7:	// OR A
+			a = a | a
+			flag_z = (a == 0)
+			flag_n = false
+			flag_h = false
+			flag_c = false
+			cycles = 1
+		case 0xB8:	// CP B
+			flag_h = half_carry(a, -b)
+			flag_c = carry(a, -b)
+			flag_z = (a == b)
+			flag_n = true
+			cycles = 1
+		case 0xB9:	// CP C
+			flag_h = half_carry(a, -c)
+			flag_c = carry(a, -c)
+			flag_z = (a == c)
+			flag_n = true
+			cycles = 1
+		case 0xBA:	// CP D
+			flag_h = half_carry(a, -d)
+			flag_c = carry(a, -d)
+			flag_z = (a == d)
+			flag_n = true
+			cycles = 1
+		case 0xBB:	// CP E
+			flag_h = half_carry(a, -e)
+			flag_c = carry(a, -e)
+			flag_z = (a == e)
+			flag_n = true
+			cycles = 1
+		case 0xBC:	// CP H
+			flag_h = half_carry(a, -h)
+			flag_c = carry(a, -h)
+			flag_z = (a == h)
+			flag_n = true
+			cycles = 1
+		case 0xBD:	// CP L
+			flag_h = half_carry(a, -l)
+			flag_c = carry(a, -l)
+			flag_z = (a == l)
+			flag_n = true
+			cycles = 1
+		case 0xBE:	// CP (HL)
+			let data = read8(hl)
+			flag_h = half_carry(a, -data)
+			flag_c = carry(a, -data)
+			flag_z = (a == data)
+			flag_n = true
+			cycles = 2
+		case 0xBF:	// CP A
+			flag_h = half_carry(a, -a)
+			flag_c = carry(a, -a)
+			flag_z = true
+			flag_n = true
+			cycles = 1
+		case 0xC0:	// RET NZ
+			if !flag_z {
+				pc = read16(sp)
+				sp += 2
+				cycles = 5
+			} else {
+				cycles = 2
+			}
+		case 0xC1:	// POP BC
+			bc = read16(sp)
+			sp += 2
+			cycles = 3
+		case 0xC2:	// JP NZ,a16
+			let data = read16(pc)
+			pc += 2
+			if !flag_z {
+				pc = data
+				cycles = 4
+			} else {
+				cycles = 3
+			}
+		case 0xC3:	// JP a16
+			pc = read16(pc)
+			cycles = 4
+		case 0xC4:	// CALL NZ,a16
+			let data = read16(pc)
+			pc += 2
+			if !flag_z {
+				sp -= 2
+				write16(sp, pc)
+				pc = data
+				cycles = 6
+			} else {
+				cycles = 3
+			}
+		case 0xC5:	// PUSH BC
+			sp -= 2
+			write16(sp, bc)
+			cycles = 4
+		case 0xC6:	// ADD A,d8
+			let data = read8(pc)
+			pc += 1
+			flag_h = half_carry(a, data)
+			flag_c = carry(a, data)
+			a = (a + data) & 0xFF
+			flag_z = (a == 0)
+			flag_n = false
+			cycles = 2
+		case 0xC7:	// RST 00H
+			sp -= 2
+			write16(sp, pc)
+			pc = 0x0000
+			cycles = 4
+		case 0xC8:	// RET Z
+			if flag_z {
+				pc = read16(sp)
+				sp += 2
+				cycles = 5
+			} else {
+				cycles = 2
+			}
 		default:
 			break
 		}
