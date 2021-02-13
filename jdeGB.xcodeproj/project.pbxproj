@@ -12,6 +12,9 @@
 		63E0311F25D72BDD00540E07 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63E0311D25D72BDD00540E07 /* MainMenu.xib */; };
 		63E0312B25D72BDD00540E07 /* jdeGBTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0312A25D72BDD00540E07 /* jdeGBTests.swift */; };
 		63E0313625D72BDD00540E07 /* jdeGBUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0313525D72BDD00540E07 /* jdeGBUITests.swift */; };
+		63E0314825D72C3700540E07 /* LR35902.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0314725D72C3700540E07 /* LR35902.swift */; };
+		63E0315825D72C7B00540E07 /* LR35902+OpCodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0315725D72C7B00540E07 /* LR35902+OpCodes.swift */; };
+		63E0315D25D72CBF00540E07 /* Instruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0315C25D72CBF00540E07 /* Instruction.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +47,9 @@
 		63E0313125D72BDD00540E07 /* jdeGBUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = jdeGBUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		63E0313525D72BDD00540E07 /* jdeGBUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = jdeGBUITests.swift; sourceTree = "<group>"; };
 		63E0313725D72BDD00540E07 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		63E0314725D72C3700540E07 /* LR35902.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LR35902.swift; sourceTree = "<group>"; };
+		63E0315725D72C7B00540E07 /* LR35902+OpCodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LR35902+OpCodes.swift"; sourceTree = "<group>"; };
+		63E0315C25D72CBF00540E07 /* Instruction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Instruction.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +100,7 @@
 		63E0311825D72BDA00540E07 /* jdeGB */ = {
 			isa = PBXGroup;
 			children = (
+				63E0314625D72BF900540E07 /* CPU */,
 				63E0311925D72BDA00540E07 /* AppDelegate.swift */,
 				63E0311B25D72BDD00540E07 /* Assets.xcassets */,
 				63E0311D25D72BDD00540E07 /* MainMenu.xib */,
@@ -119,6 +126,16 @@
 				63E0313725D72BDD00540E07 /* Info.plist */,
 			);
 			path = jdeGBUITests;
+			sourceTree = "<group>";
+		};
+		63E0314625D72BF900540E07 /* CPU */ = {
+			isa = PBXGroup;
+			children = (
+				63E0315C25D72CBF00540E07 /* Instruction.swift */,
+				63E0314725D72C3700540E07 /* LR35902.swift */,
+				63E0315725D72C7B00540E07 /* LR35902+OpCodes.swift */,
+			);
+			path = CPU;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -251,6 +268,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				63E0311A25D72BDA00540E07 /* AppDelegate.swift in Sources */,
+				63E0314825D72C3700540E07 /* LR35902.swift in Sources */,
+				63E0315D25D72CBF00540E07 /* Instruction.swift in Sources */,
+				63E0315825D72C7B00540E07 /* LR35902+OpCodes.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
