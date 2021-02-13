@@ -135,17 +135,6 @@ class LR35902 {
 	// TEMPORARY MEMORY - eventually the bus will take care of this
 	var cpuRam = Array(repeating: 0, count: 0xFFFF)
 
-	private var lookup: [Instruction] = []
-	private var cbLookup: [Instruction] = []
-	func setupLookupTables() {
-		lookup = [
-			Instruction("NOP", NOP, "IMP", IMP, 1), Instruction("LD", LDBC, "IMM", IMM16, 3), Instruction("LD", LDiBC, "IMP", IMPA, 2), Instruction("INC", INCBC, "IMP", IMP, 2), Instruction("INC", INCB, "IMP", IMP, 1), Instruction("DEC", DECB, "IMP", IMP, 1), Instruction("LD", LDB, "IMM", IMM8, 2), Instruction("RLCA", RLCA, "IMP", IMP, 4)
-		]
-		
-		cbLookup = [
-		]
-	}
-	
 	func read8(_ addr: Int) -> Int {
 		return cpuRam[addr] & 0xFF
 	}
