@@ -50,14 +50,8 @@ extension LR35902 {
 			pc += 1
 			cycles = 2
 		case 0x07:	// RLCA
-			flag_c = (a & 0x80) > 0
-			a <<= 1
-			if flag_c {
-				a |= 0x01
-			}
+			a = rlc(a)
 			flag_z = false
-			flag_n = false
-			flag_h = false
 			cycles = 1
 		case 0x08:	// LD (a16),SP
 			write16(read16(pc), sp)
@@ -92,14 +86,8 @@ extension LR35902 {
 			pc += 1
 			cycles = 2
 		case 0x0F:	// RRCA
-			flag_c = (a & 0x01) > 0
-			a >>= 1
-			if flag_c {
-				a |= 0x08
-			}
+			a = rrc(a)
 			flag_z = false
-			flag_n = false
-			flag_h = false
 			cycles = 1
 		case 0x10:	// STOP 0
 			stop = true
@@ -132,14 +120,8 @@ extension LR35902 {
 			pc += 1
 			cycles = 2
 		case 0x17:	// RLA
-			flag_c = (a & 0x80) > 0
-			a <<= 1
-			if flag_c {
-				a |= 0x01
-			}
+			a = rl(a)
 			flag_z = false
-			flag_n = false
-			flag_h = false
 			cycles = 1
 		case 0x18:	// JR r8
 			var data = read8(pc)
@@ -178,14 +160,8 @@ extension LR35902 {
 			pc += 1
 			cycles = 2
 		case 0x1F:	// RRA
-			flag_c = (a & 0x01) > 0
-			a >>= 1
-			if flag_c {
-				a |= 0x80
-			}
+			a = rr(a)
 			flag_z = false
-			flag_n = false
-			flag_h = false
 			cycles = 1
 		case 0x20:	// JR NZ,r8
 			var data = read8(pc)
@@ -1205,7 +1181,7 @@ extension LR35902 {
 			pc = 0x0010
 			cycles = 4
 		case 0xD8:	// RET C
-			if !flag_c {
+			if flag_c {
 				pc = read16(sp)
 				sp += 2
 				cycles = 5
@@ -1381,8 +1357,8 @@ extension LR35902 {
 		case 0xFE:	// CP d8
 			let data = read8(pc)
 			pc += 1
-			flag_h = half_carry(a, data)
-			flag_c = carry(a, data)
+			flag_h = half_carry(a, -data)
+			flag_c = carry(a, -data)
 			flag_z = (a == data)
 			flag_n = true
 			cycles = 2
