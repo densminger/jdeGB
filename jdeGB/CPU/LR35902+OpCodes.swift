@@ -1109,6 +1109,288 @@ extension LR35902 {
 			} else {
 				cycles = 2
 			}
+		case 0xC9:	// RET
+			pc = read16(sp)
+			sp += 2
+			cycles = 4
+		case 0xCA:	// JP Z,a16
+			if flag_z {
+				pc = read16(pc)
+				cycles = 4
+			} else {
+				cycles = 3
+			}
+		case 0xCB:	// PREFIX CB
+			let operation = read8(pc)
+			pc += 1
+			cycles = performCB(operation)
+			cycles += 1
+		case 0xCC:	// CALL Z,a16
+			let data = read16(pc)
+			pc += 2
+			if flag_z {
+				sp -= 2
+				write16(sp, pc)
+				pc = data
+				cycles = 6
+			} else {
+				cycles = 3
+			}
+		case 0xCD:	// CALL a16
+			let data = read16(pc)
+			pc += 2
+			sp -= 2
+			write16(sp, pc)
+			pc = data
+			cycles = 6
+		case 0xCE:	// ADC A,d8
+			let cy = read8(pc) + (flag_c ? 1 : 0)
+			pc += 1
+			flag_h = half_carry(a, cy)
+			flag_c = carry(a, cy)
+			a = (a + cy) & 0xFF
+			flag_z = (a == 0)
+			flag_n = false
+			cycles = 2
+		case 0xCF:	// RST 08H
+			sp -= 2
+			write16(sp, pc)
+			pc = 0x0008
+			cycles = 4
+		case 0xD0:	// RET NC
+			if !flag_c {
+				pc = read16(sp)
+				sp += 2
+				cycles = 5
+			} else {
+				cycles = 2
+			}
+		case 0xD1:	// POP DE
+			de = read16(sp)
+			sp += 2
+			cycles = 3
+		case 0xD2:	// JP NC,a16
+			let data = read16(pc)
+			pc += 2
+			if !flag_c {
+				pc = data
+				cycles = 4
+			} else {
+				cycles = 3
+			}
+		case 0xD3:	// Illegal opcode
+			cycles = 1
+		case 0xD4:	// CALL NC,a16
+			let data = read16(pc)
+			pc += 2
+			if !flag_c {
+				sp -= 2
+				write16(sp, pc)
+				pc = data
+				cycles = 6
+			} else {
+				cycles = 3
+			}
+		case 0xD5:	// PUSH DE
+			sp -= 2
+			write16(sp, de)
+			cycles = 4
+		case 0xD6:	// SUB d8
+			a = (a - read8(pc)) & 0xFF
+			pc += 1
+			cycles = 2
+		case 0xD7:	// RST 10H
+			sp -= 2
+			write16(sp, pc)
+			pc = 0x0010
+			cycles = 4
+		case 0xD8:	// RET C
+			if !flag_c {
+				pc = read16(sp)
+				sp += 2
+				cycles = 5
+			} else {
+				cycles = 2
+			}
+		case 0xD9:	// RETI
+			pc = read16(sp)
+			sp += 2
+			interrupts_enabled = true
+			cycles = 4
+		case 0xDA:	// JP C,a16
+			if flag_c {
+				pc = read16(pc)
+				cycles = 4
+			} else {
+				cycles = 3
+			}
+		case 0xDB:	// Illegal opcode
+			cycles = 1
+		case 0xDC:	// CALL C,a16
+			let data = read16(pc)
+			pc += 2
+			if flag_c {
+				sp -= 2
+				write16(sp, pc)
+				pc = data
+				cycles = 6
+			} else {
+				cycles = 3
+			}
+		case 0xDD:	// Illegal opcode
+			cycles = 1
+		case 0xDE:	// SBC A,d8
+			let cy = read8(pc) + (flag_c ? 1 : 0)
+			pc += 1
+			flag_h = half_carry(a, -cy)
+			flag_c = carry(a, -cy)
+			a = (a - cy) & 0xFF
+			flag_z = (a == 0)
+			flag_n = true
+			cycles = 2
+		case 0xDF:	// RST 18H
+			sp -= 2
+			write16(sp, pc)
+			pc = 0x0018
+			cycles = 4
+		case 0xE0:	// LDH (a8),A
+			let addr = 0xFF00 | read8(pc)
+			pc += 1
+			write8(addr, a)
+			cycles = 3
+		case 0xE1:	// POP HL
+			hl = read16(sp)
+			sp += 2
+			cycles = 3
+		case 0xE2:	// LD (C),A
+			let addr = 0xFF00 | c
+			write8(addr, a)
+			cycles = 2
+		case 0xE3:	// Illegal opcode
+			cycles = 1
+		case 0xE4:	// Illegal opcode
+			cycles = 1
+		case 0xE5:	// PUSH HL
+			sp -= 2
+			write16(sp, hl)
+			cycles = 4
+		case 0xE6:	// AND d8
+			a &= read8(pc)
+			pc += 1
+			flag_z = (a == 0)
+			flag_n = false
+			flag_h = true
+			flag_c = false
+			cycles = 2
+		case 0xE7:	// RST 20H
+			sp -= 2
+			write16(sp, pc)
+			pc = 0x0020
+			cycles = 4
+		case 0xE8:	// ADD SP,r8
+			let data = read8(pc)
+			pc += 1
+			flag_h = half_carry(sp, data)
+			flag_c = carry(sp, data)
+			sp = (sp + data) & 0xFFFF
+			flag_z = false
+			flag_n = false
+			cycles = 4
+		case 0xE9:	// JP (HL)
+			pc = read16(hl)
+			cycles = 1
+		case 0xEA:	// LD (a16),A
+			write8(read16(pc), a)
+			pc += 2
+			cycles = 4
+		case 0xEB:	// Illegal opcode
+			cycles = 1
+		case 0xEC:	// Illegal opcode
+			cycles = 1
+		case 0xED:	// Illegal opcode
+			cycles = 1
+		case 0xEE:	// XOR d8
+			a = a ^ read8(pc)
+			pc += 1
+			flag_z = (a == 0)
+			flag_n = false
+			flag_h = false
+			flag_c = false
+			cycles = 2
+		case 0xEF:	// RST 28H
+			sp -= 2
+			write16(sp, pc)
+			pc = 0x0028
+			cycles = 4
+		case 0xF0:	// LDH A,(a8)
+			a = read8(0xFF00 | read8(pc))
+			pc += 1
+			cycles = 3
+		case 0xF1:	// POP AF
+			af = read16(sp)
+			sp += 2
+			cycles = 3
+		case 0xF2:	// LD A,(C)
+			a = read8(c)
+			cycles = 2
+		case 0xF3:	// DI
+			interrupts_enabled = false
+			cycles = 1
+		case 0xF4:	// Illegal opcode
+			cycles = 1
+		case 0xF5:	// PUSH AF
+			sp -= 2
+			write16(sp, af)
+			cycles = 4
+		case 0xF6:	// OR d8
+			a |= read8(pc)
+			pc += 1
+			flag_z = (a == 0)
+			flag_n = false
+			flag_h = false
+			flag_c = false
+			cycles = 2
+		case 0xF7:	// RST 30H
+			sp -= 2
+			write16(sp, pc)
+			pc = 0x0030
+			cycles = 4
+		case 0xF8:	// LD HL,SP+r8
+			let data = read8(pc)
+			pc += 1
+			flag_h = half_carry(sp, data)
+			flag_c = carry(sp, data)
+			hl = (sp + data) & 0xFFFF
+			flag_z = false
+			flag_n = false
+			cycles = 3
+		case 0xF9:	// LD SP,HL
+			sp = hl
+			cycles = 2
+		case 0xFA:	// LD A,(a16)
+			a = read8(read16(pc))
+			pc += 2
+			cycles = 4
+		case 0xFB:	// EI
+			interrupts_enabled = true
+			cycles = 1
+		case 0xFC:	// Illegal operation
+			cycles = 1
+		case 0xFD:	// Illegal operation
+			cycles = 1
+		case 0xFE:	// CP d8
+			let data = read8(pc)
+			pc += 1
+			flag_h = half_carry(a, data)
+			flag_c = carry(a, data)
+			flag_z = (a == data)
+			flag_n = true
+			cycles = 2
+		case 0xFF:	// RST 38H
+			sp -= 2
+			write16(sp, pc)
+			pc = 0x0038
+			cycles = 4
 		default:
 			break
 		}

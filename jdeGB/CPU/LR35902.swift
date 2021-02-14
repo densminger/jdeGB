@@ -131,6 +131,7 @@ class LR35902 {
 	
 	var stop = false
 	var halt = false
+	var interrupts_enabled = true
 
 	// TEMPORARY MEMORY - eventually the bus will take care of this
 	var cpuRam = Array(repeating: 0, count: 0xFFFF)
