@@ -73,9 +73,9 @@ extension LR35902 {
 
 	func sra(_ x: Int) -> Int {
 		// The chart at https://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html says this operation clears the carry flag,
-		// but both http://www.devrs.com/gb/files/GBCPU_Instr.html#SRA and http://gameboy.mongenel.com/dmg/opcodes.html say
-		// the carry bit should be the last bit of the operand.  The latter makes the most sense to me, so I'm going with
-		// that until I find out it's wrong
+		// but http://www.devrs.com/gb/files/GBCPU_Instr.html#SRA and http://gameboy.mongenel.com/dmg/opcodes.html, as well as
+		// the pan docs themselves https://gbdev.io/pandocs, say the carry bit should be the last bit of the operand.
+		// The latter makes the most sense to me, so I'm going with that until I find out it's wrong
 		flag_c = (x & 0x01) > 0
 		let ret = ((x >> 1) | ((x & 0x40) << 1)) & 0xFF
 		flag_z = (x == 0)
@@ -98,7 +98,7 @@ extension LR35902 {
 		return (x | (1 << bit)) & 0xFF
 	}
 
-	func performCB(_ cbOp: Int) -> Int {
+	func perform_cb(_ cbOp: Int) -> Int {
 		var cycles = 0
 		switch cbOp {
 		case 0x00:	// RLC B

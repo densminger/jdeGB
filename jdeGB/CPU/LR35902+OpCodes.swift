@@ -16,7 +16,7 @@ extension LR35902 {
 
 	// Perform the operation indicated by opcode.
 	// Return the number of machine cycles the operation requires
-	func operate(opcode: Int) -> Int {
+	func perform_operation(opcode: Int) -> Int {
 		var cycles = 1
 		switch opcode {
 		case 0x00:	// NOP
@@ -1099,7 +1099,7 @@ extension LR35902 {
 		case 0xCB:	// PREFIX CB
 			let operation = read8(pc)
 			pc += 1
-			cycles = performCB(operation)
+			cycles = perform_cb(operation)
 			cycles += 1
 		case 0xCC:	// CALL Z,a16
 			let data = read16(pc)
@@ -1191,7 +1191,7 @@ extension LR35902 {
 		case 0xD9:	// RETI
 			pc = read16(sp)
 			sp += 2
-			interrupts_enabled = true
+			ime = true
 			cycles = 4
 		case 0xDA:	// JP C,a16
 			if flag_c {
@@ -1310,7 +1310,7 @@ extension LR35902 {
 			a = read8(c)
 			cycles = 2
 		case 0xF3:	// DI
-			interrupts_enabled = false
+			ime = false
 			cycles = 1
 		case 0xF4:	// Illegal opcode
 			cycles = 1
@@ -1348,7 +1348,7 @@ extension LR35902 {
 			pc += 2
 			cycles = 4
 		case 0xFB:	// EI
-			interrupts_enabled = true
+			ime = true
 			cycles = 1
 		case 0xFC:	// Illegal operation
 			cycles = 1
