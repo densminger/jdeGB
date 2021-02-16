@@ -15,6 +15,11 @@
 		63E0314825D72C3700540E07 /* LR35902.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0314725D72C3700540E07 /* LR35902.swift */; };
 		63E0315825D72C7B00540E07 /* LR35902+OpCodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0315725D72C7B00540E07 /* LR35902+OpCodes.swift */; };
 		63E0317525D87A7200540E07 /* LR35902+CP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0317425D87A7200540E07 /* LR35902+CP.swift */; };
+		63E0318225D8F7FE00540E07 /* Bus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0318125D8F7FE00540E07 /* Bus.swift */; };
+		63E0318A25DAFFF500540E07 /* Cartridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0318925DAFFF500540E07 /* Cartridge.swift */; };
+		63E0318F25DB035600540E07 /* PPU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0318E25DB035600540E07 /* PPU.swift */; };
+		63E0319725DB7BB000540E07 /* GameEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0319525DB7BB000540E07 /* GameEngine.swift */; };
+		63E0319825DB7BB000540E07 /* Sprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0319625DB7BB000540E07 /* Sprite.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,6 +55,11 @@
 		63E0314725D72C3700540E07 /* LR35902.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LR35902.swift; sourceTree = "<group>"; };
 		63E0315725D72C7B00540E07 /* LR35902+OpCodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LR35902+OpCodes.swift"; sourceTree = "<group>"; };
 		63E0317425D87A7200540E07 /* LR35902+CP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LR35902+CP.swift"; sourceTree = "<group>"; };
+		63E0318125D8F7FE00540E07 /* Bus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bus.swift; sourceTree = "<group>"; };
+		63E0318925DAFFF500540E07 /* Cartridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cartridge.swift; sourceTree = "<group>"; };
+		63E0318E25DB035600540E07 /* PPU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PPU.swift; sourceTree = "<group>"; };
+		63E0319525DB7BB000540E07 /* GameEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameEngine.swift; sourceTree = "<group>"; };
+		63E0319625DB7BB000540E07 /* Sprite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sprite.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,6 +110,7 @@
 		63E0311825D72BDA00540E07 /* jdeGB */ = {
 			isa = PBXGroup;
 			children = (
+				63E0319425DB7B7C00540E07 /* Engine */,
 				63E0314625D72BF900540E07 /* CPU */,
 				63E0311925D72BDA00540E07 /* AppDelegate.swift */,
 				63E0311B25D72BDD00540E07 /* Assets.xcassets */,
@@ -134,8 +145,20 @@
 				63E0314725D72C3700540E07 /* LR35902.swift */,
 				63E0317425D87A7200540E07 /* LR35902+CP.swift */,
 				63E0315725D72C7B00540E07 /* LR35902+OpCodes.swift */,
+				63E0318125D8F7FE00540E07 /* Bus.swift */,
+				63E0318925DAFFF500540E07 /* Cartridge.swift */,
+				63E0318E25DB035600540E07 /* PPU.swift */,
 			);
 			path = CPU;
+			sourceTree = "<group>";
+		};
+		63E0319425DB7B7C00540E07 /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				63E0319525DB7BB000540E07 /* GameEngine.swift */,
+				63E0319625DB7BB000540E07 /* Sprite.swift */,
+			);
+			path = Engine;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -267,10 +290,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63E0318225D8F7FE00540E07 /* Bus.swift in Sources */,
+				63E0319825DB7BB000540E07 /* Sprite.swift in Sources */,
+				63E0318F25DB035600540E07 /* PPU.swift in Sources */,
 				63E0311A25D72BDA00540E07 /* AppDelegate.swift in Sources */,
+				63E0319725DB7BB000540E07 /* GameEngine.swift in Sources */,
 				63E0314825D72C3700540E07 /* LR35902.swift in Sources */,
 				63E0317525D87A7200540E07 /* LR35902+CP.swift in Sources */,
 				63E0315825D72C7B00540E07 /* LR35902+OpCodes.swift in Sources */,
+				63E0318A25DAFFF500540E07 /* Cartridge.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

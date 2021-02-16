@@ -5,22 +5,28 @@
 //  Created by David Ensminger on 2/12/21.
 //
 
-import Cocoa
+import SpriteKit
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
 
 	@IBOutlet var window: NSWindow!
+	@IBOutlet var view: SKView!
 
 
 	func applicationDidFinishLaunching(_ aNotification: Notification) {
-		// Insert code here to initialize your application
+		window.contentAspectRatio = GameEngine.screenSize
+		window.contentMinSize = GameEngine.screenSize
+
+		open(path: ProcessInfo.processInfo.environment["file"] ?? "")
 	}
 
-	func applicationWillTerminate(_ aNotification: Notification) {
-		// Insert code here to tear down your application
+	func open(path: String) {
+		let scene = GameEngine(file: path)
+
+		view.presentScene(scene)
+		view.ignoresSiblingOrder = true
+		view.showsFPS = true
 	}
-
-
 }
 
