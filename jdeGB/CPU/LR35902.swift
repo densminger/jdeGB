@@ -221,8 +221,8 @@ class LR35902 {
 		write8(0xFF4A, 0x00)	// WY
 		write8(0xFF4B, 0x00)	// WX
 		write8(0xFFFF, 0x00)	// IE
-
-		pc = 0					// start at internal rom address 0x00
+		
+		pc = 0x00					// start at internal rom address 0x00
 		write8(0xFF50, 0)		// enable boot rom (0 = enable, 1 = disable)
 	}
 	
@@ -248,7 +248,6 @@ class LR35902 {
 			// run the next instruction
 			let opcode = read8(pc)
 			pc += 1
-			print(String(format: "OPCODE: %02X (HL = %04X)", opcode, hl))
 			cycles = perform_operation(opcode: opcode)
 		}
 		

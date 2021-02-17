@@ -41,7 +41,7 @@ extension LR35902 {
 			cycles = 1
 		case 0x05:	// DEC B
 			flag_h = half_carry(b, -1)
-			b = (bc - 1) & 0xFFFF
+			b = (b - 1) & 0xFF
 			flag_z = (b == 0)
 			flag_n = true
 			cycles = 1

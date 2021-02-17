@@ -73,7 +73,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "file"
-            value = "dummy"
+            value = "/Users/david/Downloads/sml.gb"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

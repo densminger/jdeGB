@@ -40,7 +40,7 @@ class Bus {
 	init() {
 		cpu.connect(bus: self)
 	}
-	
+		
 	func insert_cartridge(_ cart: Cartridge) {
 		self.cart = cart
 	}
@@ -140,7 +140,7 @@ class Bus {
 			case 0xFF43:	// SCX
 				break
 			case 0xFF44:	// LY
-				break
+				data = ppu.ly
 			case 0xFF45:	// LYC
 				break
 			case 0xFF46:	// DMA Transfer and Start Address
@@ -260,7 +260,7 @@ class Bus {
 			case 0xFF43:	// SCX
 				break
 			case 0xFF44:	// LY
-				break
+				ppu.ly = data
 			case 0xFF45:	// LYC
 				break
 			case 0xFF46:	// DMA Transfer and Start Address
