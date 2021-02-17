@@ -22,7 +22,7 @@ class LR35902 {
 		}
 		set(v) {
 			precondition(v & 0xFFFF == v)
-			a = v << 8
+			a = v >> 8
 			f = v & 0xFF
 		}
 	}
@@ -179,8 +179,8 @@ class LR35902 {
 	}
 	
 	func write16(_ addr: Int, _ data: Int) {
-		write8(addr, ((data & 0xFF00) >> 8))
-		write8(addr + 1, (data & 0x00FF))
+		write8(addr, (data & 0x00FF))
+		write8(addr + 1, ((data & 0xFF00) >> 8))
 	}
 	
 	func reset() {

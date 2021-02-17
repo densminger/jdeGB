@@ -90,8 +90,7 @@ extension LR35902 {
 				if d & 0x80 > 0 {
 					d -= 256
 				}
-				inst += "JR #\(hex(d & 0xFF, 2)) [$\(hex(addr + d, 4))"
-				addr += 1
+				inst += "JR #\(hex(d & 0xFF, 2)) [$\(hex(addr + d, 4))]"
 			case 0x19:
 				inst += "ADD HL, DE"
 			case 0x1A:
@@ -131,8 +130,12 @@ extension LR35902 {
 			case 0x27:
 				inst += "DAA"
 			case 0x28:
-				inst += "JR Z, #\(hex(read8(addr), 2))"
+				var d = read8(addr)
 				addr += 1
+				if d & 0x80 > 0 {
+					d -= 256
+				}
+				inst += "JR Z, #\(hex(d & 0xFF, 2)) [$\(hex(addr + d, 4))]"
 			case 0x29:
 				inst += "ADD HL, HL"
 			case 0x2A:
@@ -172,8 +175,12 @@ extension LR35902 {
 			case 0x37:
 				inst += "SCF"
 			case 0x38:
-				inst += "JR C, #\(hex(read8(addr), 2))"
+				var d = read8(addr)
 				addr += 1
+				if d & 0x80 > 0 {
+					d -= 256
+				}
+				inst += "JR C, #\(hex(d & 0xFF, 2)) [$\(hex(addr + d, 4))]"
 			case 0x39:
 				inst += "ADD HL, SP"
 			case 0x3A:
@@ -220,7 +227,7 @@ extension LR35902 {
 			case 0x4E:
 				inst += "LD C, (HL)"
 			case 0x4F:
-				inst += "LD B, A"
+				inst += "LD C, A"
 			case 0x50:
 				inst += "LD D, B"
 			case 0x51:

@@ -87,6 +87,8 @@ class Bus {
 				break
 			case 0xFF07:	// TAC
 				break
+			case 0xFF0F:	// Interrupt Request
+				data = cpu.interrupt_request
 			case 0xFF10:	// Channel 1 Sweep Register
 				break
 			case 0xFF11:	// Channel 1 Sound Length/Wave pattern duty
@@ -207,6 +209,8 @@ class Bus {
 				break
 			case 0xFF07:	// TAC
 				break
+			case 0xFF0F:	// Interrupt Request
+				cpu.interrupt_request = data & 0xFF
 			case 0xFF10:	// Channel 1 Sweep Register
 				break
 			case 0xFF11:	// Channel 1 Sound Length/Wave pattern duty

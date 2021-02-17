@@ -21,6 +21,10 @@ class GameEngine: SKScene {
 	
 	var emulation_run = false
 	
+	let frame_duration = 1.0/60.0
+	let clock_tick = 1.0/(1024.0*1024.0)
+	var emulator_speed = 0.008	// 1.0 = fastest, 0.0 = slowest
+	
 	var gb: Bus!
 	
 	var keyPressed: UInt16?
@@ -63,6 +67,7 @@ class GameEngine: SKScene {
 	
 	override func keyDown(with event: NSEvent) {
 		keyPressed = event.keyCode
+//		print("\(keyPressed!) down")
 	}
 	
 	override func keyUp(with event: NSEvent) {
@@ -70,20 +75,18 @@ class GameEngine: SKScene {
 	}
 
 	override func update(_ currentTime: TimeInterval) {
+		var cpu_time_elapsed = 0.0
 		node.removeAllChildren()
 
 		if emulation_run {
+			update_previous_values()
 			repeat {
 				gb.clock()
-			} while gb.cpu.cycles > 0
+				cpu_time_elapsed += clock_tick / emulator_speed
+			} while cpu_time_elapsed <= frame_duration || gb.cpu.cycles > 0
 		} else {
 			if keyPressed == 8 {	// C
-				p_pc = gb.cpu.pc
-				p_a = gb.cpu.a
-				p_bc = gb.cpu.bc
-				p_de = gb.cpu.de
-				p_hl = gb.cpu.hl
-				p_sp = gb.cpu.sp
+				update_previous_values()
 				repeat {
 					gb.clock()
 				} while gb.cpu.cycles > 0
@@ -95,17 +98,30 @@ class GameEngine: SKScene {
 		} else if keyPressed == 49 {	// space
 			emulation_run = !emulation_run
 		} else if keyPressed == 18 {	// 1
-			p_pc = gb.cpu.pc
-			p_a = gb.cpu.a
-			p_bc = gb.cpu.bc
-			p_de = gb.cpu.de
-			p_hl = gb.cpu.hl
-			p_sp = gb.cpu.sp
+			update_previous_values()
 			show_cpu = !show_cpu
 		} else if keyPressed == 19 {	// 2
 			show_code = !show_code
+		} else if keyPressed == 24 {	// + / =
+			emulator_speed += 0.0005
+			if emulator_speed > 1 {
+				emulator_speed = 1
+			}
+			print("emulator_speed = \(emulator_speed)")
+		} else if keyPressed == 27 {	// -
+			emulator_speed -= 0.0005
+			if emulator_speed < 0 {
+				emulator_speed = 0
+			}
+			print("emulator_speed = \(emulator_speed)")
+		} else if keyPressed == 30 {	// ]
+			emulator_speed = 1
+			print("emulator_speed = \(emulator_speed)")
+		} else if keyPressed == 33 {	// [
+			emulator_speed = 0
+			print("emulator_speed = \(emulator_speed)")
 		}
-		
+
 		if show_cpu {
 			draw_cpu(x: 516, y: 2)
 		}
@@ -114,6 +130,15 @@ class GameEngine: SKScene {
 		}
 	
 		keyPressed = nil
+	}
+	
+	func update_previous_values() {
+		p_pc = gb.cpu.pc
+		p_a = gb.cpu.a
+		p_bc = gb.cpu.bc
+		p_de = gb.cpu.de
+		p_hl = gb.cpu.hl
+		p_sp = gb.cpu.sp
 	}
 	
 	let COLOR_WHITE  = 0xFFFFFFFF
