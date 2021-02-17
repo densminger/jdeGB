@@ -23,7 +23,7 @@ class LR35902 {
 		set(v) {
 			precondition(v & 0xFFFF == v)
 			a = v << 8
-			f = v & 0x0F
+			f = v & 0xFF
 		}
 	}
 	var b: Int {
@@ -32,16 +32,16 @@ class LR35902 {
 		}
 		set(v) {
 			precondition(v & 0xFF == v)
-			bc = (v << 8) | (bc & 0x0F)
+			bc = (v << 8) | (bc & 0x00FF)
 		}
 	}
 	var c: Int {
 		get {
-			return bc & 0x0F
+			return bc & 0x00FF
 		}
 		set(v) {
 			precondition(v & 0xFF == v)
-			bc = (bc & 0xF0) | v
+			bc = (bc & 0xFF00) | v
 		}
 	}
 	var d: Int {
@@ -50,16 +50,16 @@ class LR35902 {
 		}
 		set(v) {
 			precondition(v & 0xFF == v)
-			de = (v << 8) | (de & 0x0F)
+			de = (v << 8) | (de & 0x00FF)
 		}
 	}
 	var e: Int {
 		get {
-			return de & 0x0F
+			return de & 0x00FF
 		}
 		set(v) {
 			precondition(v & 0xFF == v)
-			de = (de & 0xF0) | v
+			de = (de & 0xFF00) | v
 		}
 	}
 	var h: Int {
@@ -68,16 +68,16 @@ class LR35902 {
 		}
 		set(v) {
 			precondition(v & 0xFF == v)
-			hl = (v << 8) | (hl & 0x0F)
+			hl = (v << 8) | (hl & 0x00FF)
 		}
 	}
 	var l: Int {
 		get {
-			return hl & 0x0F
+			return hl & 0x00FF
 		}
 		set(v) {
 			precondition(v & 0xFF == v)
-			hl = (hl & 0xF0) | v
+			hl = (hl & 0xFF00) | v
 		}
 	}
 	
