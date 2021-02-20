@@ -14,7 +14,7 @@
 		63E0313625D72BDD00540E07 /* jdeGBUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0313525D72BDD00540E07 /* jdeGBUITests.swift */; };
 		63E0314825D72C3700540E07 /* LR35902.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0314725D72C3700540E07 /* LR35902.swift */; };
 		63E0315825D72C7B00540E07 /* LR35902+OpCodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0315725D72C7B00540E07 /* LR35902+OpCodes.swift */; };
-		63E0317525D87A7200540E07 /* LR35902+CP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0317425D87A7200540E07 /* LR35902+CP.swift */; };
+		63E0317525D87A7200540E07 /* LR35902+CB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0317425D87A7200540E07 /* LR35902+CB.swift */; };
 		63E0318225D8F7FE00540E07 /* Bus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0318125D8F7FE00540E07 /* Bus.swift */; };
 		63E0318A25DAFFF500540E07 /* Cartridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0318925DAFFF500540E07 /* Cartridge.swift */; };
 		63E0318F25DB035600540E07 /* PPU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0318E25DB035600540E07 /* PPU.swift */; };
@@ -24,6 +24,7 @@
 		63E031A325DC2D5900540E07 /* MBC0.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E031A225DC2D5900540E07 /* MBC0.swift */; };
 		63E031A825DC2D8300540E07 /* MBC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E031A725DC2D8300540E07 /* MBC.swift */; };
 		63E031AD25DC56A400540E07 /* LR35902+Disassemble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E031AC25DC56A400540E07 /* LR35902+Disassemble.swift */; };
+		63E031B225DE02D700540E07 /* LR35902Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E031B125DE02D700540E07 /* LR35902Tests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,7 +59,7 @@
 		63E0313725D72BDD00540E07 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		63E0314725D72C3700540E07 /* LR35902.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LR35902.swift; sourceTree = "<group>"; };
 		63E0315725D72C7B00540E07 /* LR35902+OpCodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LR35902+OpCodes.swift"; sourceTree = "<group>"; };
-		63E0317425D87A7200540E07 /* LR35902+CP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LR35902+CP.swift"; sourceTree = "<group>"; };
+		63E0317425D87A7200540E07 /* LR35902+CB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LR35902+CB.swift"; sourceTree = "<group>"; };
 		63E0318125D8F7FE00540E07 /* Bus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bus.swift; sourceTree = "<group>"; };
 		63E0318925DAFFF500540E07 /* Cartridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cartridge.swift; sourceTree = "<group>"; };
 		63E0318E25DB035600540E07 /* PPU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PPU.swift; sourceTree = "<group>"; };
@@ -68,6 +69,7 @@
 		63E031A225DC2D5900540E07 /* MBC0.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBC0.swift; sourceTree = "<group>"; };
 		63E031A725DC2D8300540E07 /* MBC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBC.swift; sourceTree = "<group>"; };
 		63E031AC25DC56A400540E07 /* LR35902+Disassemble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LR35902+Disassemble.swift"; sourceTree = "<group>"; };
+		63E031B125DE02D700540E07 /* LR35902Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LR35902Tests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,6 +136,7 @@
 			children = (
 				63E0312A25D72BDD00540E07 /* jdeGBTests.swift */,
 				63E0312C25D72BDD00540E07 /* Info.plist */,
+				63E031B125DE02D700540E07 /* LR35902Tests.swift */,
 			);
 			path = jdeGBTests;
 			sourceTree = "<group>";
@@ -152,12 +155,12 @@
 			children = (
 				63E0319C25DC2D0400540E07 /* MBCs */,
 				63E0314725D72C3700540E07 /* LR35902.swift */,
-				63E0317425D87A7200540E07 /* LR35902+CP.swift */,
+				63E0317425D87A7200540E07 /* LR35902+CB.swift */,
 				63E0315725D72C7B00540E07 /* LR35902+OpCodes.swift */,
+				63E031AC25DC56A400540E07 /* LR35902+Disassemble.swift */,
 				63E0318125D8F7FE00540E07 /* Bus.swift */,
 				63E0318925DAFFF500540E07 /* Cartridge.swift */,
 				63E0318E25DB035600540E07 /* PPU.swift */,
-				63E031AC25DC56A400540E07 /* LR35902+Disassemble.swift */,
 			);
 			path = CPU;
 			sourceTree = "<group>";
@@ -320,7 +323,7 @@
 				63E0319E25DC2D4600540E07 /* MBC1.swift in Sources */,
 				63E0319725DB7BB000540E07 /* GameEngine.swift in Sources */,
 				63E0314825D72C3700540E07 /* LR35902.swift in Sources */,
-				63E0317525D87A7200540E07 /* LR35902+CP.swift in Sources */,
+				63E0317525D87A7200540E07 /* LR35902+CB.swift in Sources */,
 				63E0315825D72C7B00540E07 /* LR35902+OpCodes.swift in Sources */,
 				63E0318A25DAFFF500540E07 /* Cartridge.swift in Sources */,
 			);
@@ -331,6 +334,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				63E0312B25D72BDD00540E07 /* jdeGBTests.swift in Sources */,
+				63E031B225DE02D700540E07 /* LR35902Tests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -6,7 +6,7 @@
 //
 
 extension LR35902 {
-	private var hex: (Int, Int) -> String {
+	var hex: (Int, Int) -> String {
 		get {
 			{ (n, x) in
 				if x == 2 {
@@ -533,7 +533,7 @@ extension LR35902 {
 			case 0xDF:
 				inst += "RST 18H"
 			case 0xE0:
-				inst += "LDH $FF\(hex(read8(addr), 2)), A"
+				inst += "LD $FF\(hex(read8(addr), 2)), A"
 				addr += 1
 			case 0xE1:
 				inst += "POP HL"
@@ -570,7 +570,7 @@ extension LR35902 {
 			case 0xEF:
 				inst += "RST 28H"
 			case 0xF0:
-				inst += "LDH A, $FF\(hex(read8(addr), 2))"
+				inst += "LD A, $FF\(hex(read8(addr), 2))"
 				addr += 1
 			case 0xF1:
 				inst += "POP AF"

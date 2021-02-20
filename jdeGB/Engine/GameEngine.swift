@@ -16,8 +16,8 @@ class GameEngine: SKScene {
 	private let screenNode: SKSpriteNode
 	private let screenFrame: Sprite
 	
-	var show_cpu = false
-	var show_code = false
+	var show_cpu = true
+	var show_code = true
 	
 	var emulation_run = false
 	
@@ -29,7 +29,7 @@ class GameEngine: SKScene {
 	
 	var keyPressed: UInt16?
 	
-	var mapLigb: [Int:String]?
+	var mapLines: [Int:String]?
 	var keys:  [Dictionary<Int, String>.Keys.Element]?
 
 	init(file: String) {
@@ -56,8 +56,8 @@ class GameEngine: SKScene {
 			gb.insert_cartridge(cart)
 			gb.reset()
 
-			mapLigb = gb.cpu.disassemble(start: 0x0000, end: 0xFFFF)
-			keys = Array(mapLigb!.keys).sorted()
+			mapLines = gb.cpu.disassemble(start: 0x0000, end: 0xFFFF)
+			keys = Array(mapLines!.keys).sorted()
 		}
 	}
 	
@@ -67,7 +67,6 @@ class GameEngine: SKScene {
 	
 	override func keyDown(with event: NSEvent) {
 		keyPressed = event.keyCode
-//		print("\(keyPressed!) down")
 	}
 	
 	override func keyUp(with event: NSEvent) {
@@ -83,6 +82,13 @@ class GameEngine: SKScene {
 			repeat {
 				gb.clock()
 				cpu_time_elapsed += clock_tick / emulator_speed
+//				if gb.cpu.pc == 0xDEF9 {
+//					while gb.cpu.cycles > 0 {
+//						gb.clock()
+//					}
+//					emulation_run = false
+//					break
+//				}
 			} while cpu_time_elapsed <= frame_duration || gb.cpu.cycles > 0
 		} else {
 			if keyPressed == 8 {	// C
@@ -120,6 +126,11 @@ class GameEngine: SKScene {
 		} else if keyPressed == 33 {	// [
 			emulator_speed = 0
 			print("emulator_speed = \(emulator_speed)")
+		} else if keyPressed == 2 { 	// d
+			mapLines = gb.cpu.disassemble(start: 0x0000, end: 0xFFFF)
+			keys = Array(mapLines!.keys).sorted()
+//		} else if keyPressed != nil {
+//			print("\(keyPressed!) down")
 		}
 
 		if show_cpu {
@@ -148,7 +159,7 @@ class GameEngine: SKScene {
 	let COLOR_YELLOW = 0xFF00FFFF
 	
 	func draw_code(x: Int, y: Int, lines: Int) {
-		guard let mapAsm = mapLigb, let keys = keys else {
+		guard let mapAsm = mapLines, let keys = keys else {
 			return
 		}
 //		node.drawString(x: x, y: y, text: mapAsm[gb.cpu.pc] ?? "???")

@@ -164,7 +164,7 @@ class LR35902 {
 	}
 
 	func read8(_ addr: Int) -> Int {
-		return bus.read(addr)
+		return bus.read(addr) & 0xFF
 	}
 	
 	func read16(_ addr: Int) -> Int {
@@ -175,7 +175,7 @@ class LR35902 {
 	}
 	
 	func write8(_ addr: Int, _ data: Int) {
-		bus.write(addr, data)
+		bus.write(addr, data & 0xFF)
 	}
 	
 	func write16(_ addr: Int, _ data: Int) {
@@ -222,8 +222,8 @@ class LR35902 {
 		write8(0xFF4B, 0x00)	// WX
 		write8(0xFFFF, 0x00)	// IE
 		
-		pc = 0x00					// start at internal rom address 0x00
-		write8(0xFF50, 0)		// enable boot rom (0 = enable, 1 = disable)
+		pc = 0x100					// start at internal rom address 0x00
+		write8(0xFF50, 1)		// enable boot rom (0 = enable, 1 = disable)
 	}
 	
 	func clock() {
@@ -250,7 +250,7 @@ class LR35902 {
 			pc += 1
 			cycles = perform_operation(opcode: opcode)
 		}
-		
+
 		cycles -= 1
 	}
 	
@@ -302,4 +302,5 @@ class LR35902 {
 		// this interupt request takes 5 cycles to complete
 		cycles = 5
 	}
+
 }

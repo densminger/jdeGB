@@ -50,6 +50,13 @@
             ReferencedContainer = "container:jdeGB.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "file"
+            value = "/Users/david/Downloads/blargg-test-roms-master/instr_timing/source/test.o"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

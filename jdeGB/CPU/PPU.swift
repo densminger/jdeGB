@@ -12,7 +12,7 @@ class PPU {
 	// LCD Control Register
 	var lcdc = 0
 	
-	var ly = 0
+	var ly = 0x90
 
 	func read(_ addr: Int) -> Int {
 		return 0

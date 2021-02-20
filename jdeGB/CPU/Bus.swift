@@ -34,8 +34,17 @@ class Bus {
 	var dma_transfer = false
 	var dma_page = 0x00
 	var dma_byte = 0x00
+	
+	var serial = 0
 
 	var cart: Cartridge!
+	
+	// timer variables
+	var divider_timer = 0
+	var tac_timer = 0
+	var tac_timer_enable = false
+	var tac_timer_interval = 256
+	var tac_timer_inc = 0
 	
 	init() {
 		cpu.connect(bus: self)
@@ -76,17 +85,30 @@ class Bus {
 			case 0xFF00:	// Joypad
 				break
 			case 0xFF01:	// Serial transfer Data
-				break
+				data = serial
 			case 0xFF02:	// Serial transfer Control
 				break
 			case 0xFF04:	// Divider register
-				break
+				data = divider_timer & 0xFF
 			case 0xFF05:	// TIMA
-				break
+				data = tac_timer
 			case 0xFF06:	// TMA
 				break
 			case 0xFF07:	// TAC
-				break
+				var tac_frequency_bits = 0
+				switch (tac_timer_interval) {
+				case 256:
+					tac_frequency_bits = 0b00
+				case 4:
+					tac_frequency_bits = 0b01
+				case 16:
+					tac_frequency_bits = 0b10
+				case 64:
+					tac_frequency_bits = 0b11
+				default:
+					break
+				}
+				data = ((tac_timer_enable ? 1 : 0) << 2) | (tac_frequency_bits & 0x03)
 			case 0xFF0F:	// Interrupt Request
 				data = cpu.interrupt_request
 			case 0xFF10:	// Channel 1 Sweep Register
@@ -198,17 +220,37 @@ class Bus {
 			case 0xFF00:	// Joypad
 				break
 			case 0xFF01:	// Serial transfer Data
-				break
+				serial = data
 			case 0xFF02:	// Serial transfer Control
-				break
+				if data == 0x81 {
+					let chr = read(0xFF01)
+					if chr == 10 || (chr >= 32 && chr <= 122) {
+						print("\(String(UnicodeScalar(UInt8(chr))))", terminator: "")
+					} else {
+						print(String(format: "0x%02X ", chr))
+					}
+				}
 			case 0xFF04:	// Divider register
-				break
+				divider_timer = 0
 			case 0xFF05:	// TIMA
 				break
 			case 0xFF06:	// TMA
 				break
 			case 0xFF07:	// TAC
-				break
+				tac_timer_enable = (data & 0x04) > 0
+				switch (data & 0x03) {
+				case 0:
+					tac_timer_interval = 256	// 4096 Hz, every 256 machine clock ticks
+				case 1:
+					tac_timer_interval = 4			// 262144 Hz, every 4 machine clock ticks
+				case 2:
+					tac_timer_interval = 16			// 65536 Hz, every 16 machine clock ticks
+				case 3:
+					tac_timer_interval = 64			// 16384 Hz, every 64 machine clock ticks
+				default:
+					break
+				}
+				tac_timer_inc = 0
 			case 0xFF0F:	// Interrupt Request
 				cpu.interrupt_request = data & 0xFF
 			case 0xFF10:	// Channel 1 Sweep Register
@@ -308,6 +350,15 @@ class Bus {
 			cpu.clock()
 		}
 		
+		// handle the timer every 64 clock ticks (16384 Hz)
+		if clock_count % 64 == 0 {
+			handle_div_timer()
+		}
+		
+		if tac_timer_enable {
+			handle_tac_timer()
+		}
+		
 		clock_count += 1
 	}
 	
@@ -315,4 +366,25 @@ class Bus {
 		cpu.reset()
 		clock_count = 0
 	}
+	
+	func handle_div_timer() {
+		divider_timer += 1
+		if divider_timer >= 256 {
+			divider_timer -= 256
+		}
+	}
+	
+	func handle_tac_timer() {
+		tac_timer_inc += 1
+		if tac_timer_inc >= tac_timer_interval {
+			tac_timer_inc = 0
+			tac_timer += 1
+			if tac_timer >= 256 {
+				tac_timer -= 256
+				cpu.interrupt_request |= 0x04
+			}
+			
+		}
+	}
+	
 }

@@ -46,8 +46,8 @@ extension LR35902 {
 	
 	func sla(_ x: Int) -> Int {
 		flag_c = (x & 0x80) > 0
-		let ret = (x << 1) & 0xFF
-		flag_z = (x == 0)
+		let ret = (x << 1) & 0xFE
+		flag_z = (ret == 0)
 		flag_n = false
 		flag_h = false
 		return ret
@@ -55,7 +55,7 @@ extension LR35902 {
 	
 	func srl(_ x: Int) -> Int {
 		flag_c = (x & 0x01) > 0
-		let ret = (x >> 1) & 0xFF
+		let ret = (x >> 1) & 0x7F
 		flag_z = (ret == 0)
 		flag_n = false
 		flag_h = false
@@ -77,8 +77,8 @@ extension LR35902 {
 		// the pan docs themselves https://gbdev.io/pandocs, say the carry bit should be the last bit of the operand.
 		// The latter makes the most sense to me, so I'm going with that until I find out it's wrong
 		flag_c = (x & 0x01) > 0
-		let ret = ((x >> 1) | ((x & 0x40) << 1)) & 0xFF
-		flag_z = (x == 0)
+		let ret = ((x >> 1) | (x & 0x80)) & 0xFF
+		flag_z = (ret == 0)
 		flag_n = false
 		flag_h = false
 		return ret
@@ -171,7 +171,7 @@ extension LR35902 {
 			write8(hl, rl(read8(hl)))
 			cycles = 4
 		case 0x17: // RL A
-			a = rr(a)
+			a = rl(a)
 			cycles = 2
 		case 0x18: // RR B
 			b = rr(b)
@@ -313,7 +313,7 @@ extension LR35902 {
 			cycles = 2
 		case 0x46:	// BIT 0,(HL)
 			bit(read8(hl), 0)
-			cycles = 4
+			cycles = 3
 		case 0x47:	// BIT 0,A
 			bit(a, 0)
 			cycles = 2
@@ -337,7 +337,7 @@ extension LR35902 {
 			cycles = 2
 		case 0x4E:	// BIT 1,(HL)
 			bit(read8(hl), 1)
-			cycles = 4
+			cycles = 3
 		case 0x4F:	// BIT 1,A
 			bit(a, 1)
 			cycles = 2
@@ -361,7 +361,7 @@ extension LR35902 {
 			cycles = 2
 		case 0x56:	// BIT 2,(HL)
 			bit(read8(hl), 2)
-			cycles = 4
+			cycles = 3
 		case 0x57:	// BIT 2,A
 			bit(a, 2)
 			cycles = 2
@@ -385,7 +385,7 @@ extension LR35902 {
 			cycles = 2
 		case 0x5E:	// BIT 3,(HL)
 			bit(read8(hl), 3)
-			cycles = 4
+			cycles = 3
 		case 0x5F:	// BIT 3,A
 			bit(a, 3)
 			cycles = 2
@@ -409,7 +409,7 @@ extension LR35902 {
 			cycles = 2
 		case 0x66:	// BIT 4,(HL)
 			bit(read8(hl), 4)
-			cycles = 4
+			cycles = 3
 		case 0x67:	// BIT 4,A
 			bit(a, 4)
 			cycles = 2
@@ -433,7 +433,7 @@ extension LR35902 {
 			cycles = 2
 		case 0x6E:	// BIT 5,(HL)
 			bit(read8(hl), 5)
-			cycles = 4
+			cycles = 3
 		case 0x6F:	// BIT 5,A
 			bit(a, 5)
 			cycles = 2
@@ -457,7 +457,7 @@ extension LR35902 {
 			cycles = 2
 		case 0x76:	// BIT 6,(HL)
 			bit(read8(hl), 6)
-			cycles = 4
+			cycles = 3
 		case 0x77:	// BIT 6,A
 			bit(a, 6)
 			cycles = 2
@@ -481,7 +481,7 @@ extension LR35902 {
 			cycles = 2
 		case 0x7E:	// BIT 7,(HL)
 			bit(read8(hl), 7)
-			cycles = 4
+			cycles = 3
 		case 0x7F:	// BIT 7,A
 			bit(a, 7)
 			cycles = 2
