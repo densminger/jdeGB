@@ -100,32 +100,36 @@ class Cartridge {
 
 	func read(_ addr: Int) -> Int {
 		let mapped_addr = mbc.mapped_addr(addr: addr)
-		if addr >= 0xA000 && addr <= 0xBFFF {
+		switch addr {
+		case 0xA000...0xBFFF:
 			if ram != nil {
 				return ram![mapped_addr] & 0xFF
 			} else {
 				return 0x00
 			}
-		} else {
+		default:
 			return rom[mapped_addr] & 0xFF
 		}
 	}
 
 	func write(_ addr: Int, _ data: Int) {
-		if addr >= 0x0000 && addr <= 0x1FFF {
+		switch addr {
+		case 0x0000...0x1FFF:
 			mbc.ram_enable = (data == 0x0A)
-		} else if addr >= 0x2000 && addr <= 0x3FFF {
+		case 0x2000...0x3FFF:
 			mbc.rom_bank = (data & 0x1F) & (~mbc.banks)
 			if mbc.rom_bank == 0 {
 				mbc.rom_bank = 1
 			}
-		} else if addr >= 0x4000 && addr <= 0x5FFF {
+		case 0x4000...0x5FFF:
 			mbc.secondary_bank = data & 0x03
-		} else if addr >= 0x6000 && addr <= 0x7FFF {
+		case 0x6000...0x7FFF:
 			mbc.bank_mode = data & 0x01
-		} else if addr >= 0xA000 && addr <= 0xBFFF && ram != nil {
+		case 0xA000...0xBFFF where ram != nil:
 			let mapped_addr = mbc.mapped_addr(addr: addr)
 			ram![mapped_addr] = data & 0xFF
+		default:
+			break
 		}
 	}
 }

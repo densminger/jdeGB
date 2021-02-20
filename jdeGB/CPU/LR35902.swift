@@ -222,8 +222,8 @@ class LR35902 {
 		write8(0xFF4B, 0x00)	// WX
 		write8(0xFFFF, 0x00)	// IE
 		
-		pc = 0x100					// start at internal rom address 0x00
-		write8(0xFF50, 1)		// enable boot rom (0 = enable, 1 = disable)
+		pc = 0x00					// start at internal rom address 0x00
+		write8(0xFF50, 0)		// enable boot rom (0 = enable, 1 = disable)
 	}
 	
 	func clock() {

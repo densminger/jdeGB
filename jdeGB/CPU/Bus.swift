@@ -55,32 +55,31 @@ class Bus {
 	}
 
 	func read(_ addr: Int) -> Int {
-		var data = 0x00
+		var data = 0xFF
 
-		if addr >= 0x0000 && addr <= 0x00FF {
-			if boot_rom_enabled {
-				data = boot_rom[addr]
-			} else {
-				data = cart.read(addr)
-			}
-		} else if addr >= 0x0100 && addr <= 0x7FFF {			// From the cartridge - let the cartridge/MBC handle this
+		switch addr {
+		case 0x0000...0x00FF where boot_rom_enabled:
+			data = boot_rom[addr]
+		case 0x0000...0x00FF where !boot_rom_enabled:
 			data = cart.read(addr)
-		} else if addr >= 0x8000 && addr <= 0x9FFF {	// VRAM, request the data from the PPU
+		case 0x0100...0x7FFF:			// From the cartridge - let the cartridge/MBC handle this
+			data = cart.read(addr)
+		case 0x8000...0x9FFF:			// VRAM, request the data from the PPU
 			data = ppu.read(addr)
-		} else if addr >= 0xA000 && addr <= 0xBFFF {	// 8KB External RAM (on cartridge, if any)
+		case 0xA000...0xBFFF:			// 8KB External RAM (on cartridge, if any)
 			data = cart.read(addr)
-		} else if addr >= 0xC000 && addr <= 0xFDFF {
+		case 0xC000...0xFDFF:
 			// The memory range 0xE000 -> 0xFDFF is a mirror of 0xC000 -> 0xDDFF.
 			// In our case, this doesn't matter, since the bank and the bank_addr
 			// are only looking at the lower 13 bits anyway.
 			let bank = (addr & 0x1000) >> 12
 			let bank_addr = (addr & 0x0FFF)
 			data = cpu.wram[bank][bank_addr] & 0xFF
-		} else if addr >= 0xFE00 && addr <= 0xFE9F {
+		case 0xFE00...0xFE9F:			// OAM
 			data = ppu.oam[addr & 0x00FF] & 0xFF
-		} else if addr >= 0xFEA0 && addr <= 0xFEFF {	// Nintendo says this area is unusable, so return 0xFF
+		case 0xFEA0...0xFEFF:			// Nintendo says this area is unusable, so return 0xFF
 			data = 0xFF
-		} else if addr >= 0xFF00 && addr <= 0xFF7F {	// I/O Registers
+		case 0xFF00...0xFF7F:			// I/O Registers
 			switch addr {
 			case 0xFF00:	// Joypad
 				break
@@ -153,12 +152,12 @@ class Bus {
 				break
 			case 0xFF26:	// Sound on/off
 				break
-			case let a where a >= 0xFF30 && a <= 0xFF3F:	// Wave Pattern RAM
+			case 0xFF30...0xFF3F:	// Wave Pattern RAM
 				break
-			case 0xFF40:
+			case 0xFF40:	// LCDC
 				data = ppu.lcdc
 			case 0xFF41:	// LCDC Status
-				break
+				data = ppu.lcdc_status
 			case 0xFF42:	// SCY
 				break
 			case 0xFF43:	// SCX
@@ -184,44 +183,42 @@ class Bus {
 			default:
 				break
 			}
-		} else if addr >= 0xFF80 && addr <= 0xFFFE {	// HRAM
+		case 0xFF80...0xFFFE:			// HRAM
 			data = cpu.hram[addr & 0x007F] & 0xFF
-		} else if addr == 0xFFFF {
+		case 0xFFFF:
 			data = cpu.interrupt_enable
+		default:
+			break
 		}
 		
 		return data
 	}
 	
 	func write(_ addr: Int, _ data: Int) {
-		if addr >= 0x0000 && addr <= 0x00FF {
-			if boot_rom_enabled {
-				// do nothing - writes are ignored
-			} else {
-				cart.write(addr, data)
-			}
-		} else if addr >= 0x0100 && addr <= 0x7FFF {
+		switch addr {
+		case 0x0000...0x00FF where !boot_rom_enabled:
 			cart.write(addr, data)
-		} else if addr >= 0x8000 && addr <= 0x9FFF {	// VRAM, request the data from the PPU
+		case 0x0100...0x7FFF:
+			cart.write(addr, data)
+		case 0x8000...0x9FFF:	// VRAM, request the data from the PPU
 			ppu.write(addr, data)
-		} else if addr >= 0xA000 && addr <= 0xBFFF {	// 8KB External RAM (on cartridge, if any)
+		case 0xA000...0xBFFF:	// 8KB External RAM (on cartridge, if any)
 			cart.write(addr, data)
-		} else if addr >= 0xC000 && addr <= 0xFDFF {
-			// The memory range 0xE000 -> 0xFDFF is a mirror of 0xC000 -> 0xDDFF.
-			// In our case, this doesn't matter, since the bank and the bank_addr
-			// are only looking at the lower 13 bits anyway.
+		case 0xC000...0xFDFF:
 			let bank = (addr & 0x1000) >> 12
 			let bank_addr = (addr & 0x0FFF)
 			cpu.wram[bank][bank_addr] = data & 0xFF
-		} else if addr >= 0xFE00 && addr <= 0xFE9F {
+		case 0xFE00...0xFE9F:
 			ppu.oam[addr & 0x00FF] = data & 0xFF
-		} else if addr >= 0xFF00 && addr <= 0xFF7F {	// I/O Registers
+		case 0xFF00...0xFF7F:	// I/O Registers
 			switch addr {
 			case 0xFF00:	// Joypad
 				break
 			case 0xFF01:	// Serial transfer Data
 				serial = data
 			case 0xFF02:	// Serial transfer Control
+				// for now, just print to the console
+				// The Blargg Test ROMs print data to the console so this is helpful for now.
 				if data == 0x81 {
 					let chr = read(0xFF01)
 					if chr == 10 || (chr >= 32 && chr <= 122) {
@@ -295,12 +292,12 @@ class Bus {
 				break
 			case 0xFF26:	// Sound on/off
 				break
-			case let a where a >= 0xFF30 && a <= 0xFF3F:	// Wave Pattern RAM
+			case 0xFF30...0xFF3F:	// Wave Pattern RAM
 				break
 			case 0xFF40:
 				ppu.lcdc = data
 			case 0xFF41:	// LCDC Status
-				break
+				ppu.lcdc_status = data
 			case 0xFF42:	// SCY
 				break
 			case 0xFF43:	// SCX
@@ -328,14 +325,18 @@ class Bus {
 			default:
 				break
 			}
-		} else if addr >= 0xFF80 && addr <= 0xFFFE {	// HRAM
+		case 0xFF80...0xFFFE:	// HRAM
 			cpu.hram[addr & 0x007F] = data & 0xFF
-		} else if addr == 0xFFFF {
+		case 0xFFFF:
 			cpu.interrupt_enable = data & 0xFF
+		default:
+			break
 		}
 	}
 	
 	func clock() {
+		ppu.clock()
+
 		if dma_transfer {
 			let src_addr = (dma_page << 8) | dma_byte
 			let dest_addr = 0xFE00 | dma_byte
