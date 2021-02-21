@@ -9,11 +9,13 @@ class PPU {
 	// the colors for the background palette indices
 	//  Each 32-bit int is in the order: AABBGGRR (not RRGGBB like you might suspect)
 	// Alpha is always 100% so it's set to FF
-	let COLORS = [0xFF0FBC9B, 0xFF0FAC8B, 0xFF306230, 0xFF0F380F]
+	let COLORS: [UInt32] = [0xFF0FBC9B, 0xFF0FAC8B, 0xFF306230, 0xFF0F380F]
 	
 	var vram = Array(repeating: 0, count: 0x2000)
 	var oam = Array(repeating: 0, count: 160)
 	var bus: Bus!
+	
+	var screen = Sprite(width: 160, height: 144)
 	
 	// LCD Control Register
 	var lcdc = 0
@@ -203,6 +205,9 @@ class PPU {
 	var wy = 0
 	
 	var bg_palette = 0b11100100
+	func bg_palette_index(_ i: Int) -> Int {
+		return (bg_palette & (0b11 << (i*2))) >> (i*2)
+	}
 	var sprite_palette_0 = 0b11100100
 	var sprite_palette_1 = 0b11100100
 	
@@ -225,6 +230,30 @@ class PPU {
 	}
 	
 	func do_mode_1() {
+		for tile in 0..<128 {
+			for y in 0..<8 {
+				for x in 0..<8 {
+					let byte1 = vram[0x0800*0 + tile*16 + 2*y+1]
+					let byte0 = vram[0x0800*0 + tile*16 + 2*y]
+					let shift = 7-x
+					let palette_index = ((byte1 & (1 << shift)) >> (shift-1)) | ((byte0 & (1 << shift)) >> shift)
+					let bg_color = bg_palette_index(palette_index)
+					screen[(tile*8 + x) % 160,(tile/20)*8 + y] = COLORS[bg_color]
+				}
+			}
+		}
+		for tile in 0..<128 {
+			for y in 0..<8 {
+				for x in 0..<8 {
+					let byte1 = vram[0x0800*1 + tile*16 + 2*y+1]
+					let byte0 = vram[0x0800*1 + tile*16 + 2*y]
+					let shift = 7-x
+					let palette_index = ((byte1 & (1 << shift)) >> (shift-1)) | ((byte0 & (1 << shift)) >> shift)
+					let bg_color = bg_palette_index(palette_index)
+					screen[(tile*8 + x) % 160,(tile/20)*8 + y + 7*8] = COLORS[bg_color]
+				}
+			}
+		}
 	}
 	
 	func do_mode_2() {

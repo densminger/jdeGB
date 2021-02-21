@@ -222,10 +222,13 @@ class LR35902 {
 		write8(0xFF4B, 0x00)	// WX
 		write8(0xFFFF, 0x00)	// IE
 		
-		pc = 0x100					// start at internal rom address 0x00
-		write8(0xFF50, 1)		// enable boot rom (0 = enable, 1 = disable)
+		pc = 0x00					// start at internal rom address 0x00
+		write8(0xFF50, 0)		// enable boot rom (0 = enable, 1 = disable)
 	}
 	
+	// DEBUG
+//	var mapLines: [Int:String]!
+	// END DEBUG
 	func clock() {
 		if cycles > 0 {
 			cycles -= 1
@@ -247,6 +250,14 @@ class LR35902 {
 			}
 			// run the next instruction
 			let opcode = read8(pc)
+			
+			// DEBUG
+//			if mapLines[pc]?.contains("NOP") ?? false {
+//				mapLines = disassemble(start: 0x0000, end: 0xFFFF)
+//			}
+//			print("\(mapLines[pc] ?? "???"), A=\(hex(a,2)) BC=\(hex(bc,4)) DE=\(hex(de,4)) HL=\(hex(hl,4)) SP=\(hex(sp,4))")
+			// END DEBUG
+			
 			pc += 1
 			cycles = perform_operation(opcode: opcode)
 		}

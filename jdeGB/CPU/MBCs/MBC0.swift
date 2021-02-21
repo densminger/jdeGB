@@ -7,7 +7,13 @@
 
 // This is for cartridges with "No MBC"
 class MBC0: MBC {
-	override func mapped_addr(addr: Int) -> Int {
+	override func write_addr(addr: Int) -> Int {
 		return addr
 	}
+	
+	override func read_addr(addr: Int) -> Int {
+		return addr
+	}
+	
+	
 }

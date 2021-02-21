@@ -58,6 +58,8 @@ class GameEngine: SKScene {
 
 			mapLines = gb.cpu.disassemble(start: 0x0000, end: 0xFFFF)
 			keys = Array(mapLines!.keys).sorted()
+			
+			//gb.cpu.mapLines = mapLines
 		}
 	}
 	
@@ -85,29 +87,29 @@ class GameEngine: SKScene {
 			// while the second version will run at full speed until the ppu is done rendering a frame and then go to the next frame.
 
 			// Version 1: this version will make sure the game engine runs at 60 fps, based on cpu time
-			repeat {
-				gb.clock()
-				cpu_time_elapsed += clock_tick / emulator_speed
-//				if gb.cpu.pc == 0xDEF9 {
+//			repeat {
+//				gb.clock()
+//				cpu_time_elapsed += clock_tick / emulator_speed
+//				if gb.cpu.pc == 0x0100 {
 //					while gb.cpu.cycles > 0 {
 //						gb.clock()
 //					}
 //					emulation_run = false
 //					break
 //				}
-			} while cpu_time_elapsed <= frame_duration
+//			} while cpu_time_elapsed <= frame_duration
 			
 			// Version 2: this block will sync up the frames of the game engine with the frame of the emulation
-//			repeat {
-//				gb.clock()
-////				if gb.cpu.pc == 0x01BA {
-////					while gb.cpu.cycles > 0 {
-////						gb.clock()
-////					}
-////					emulation_run = false
-////					break
-////				}
-//			} while gb.ppu.ly != 0 || gb.ppu.dot_count != 1
+			repeat {
+				gb.clock()
+				if gb.cpu.pc == 0x0100 {
+					while gb.cpu.cycles > 0 {
+						gb.clock()
+					}
+					emulation_run = false
+					break
+				}
+			} while gb.ppu.ly != 0 || gb.ppu.dot_count != 1
 		} else {
 			if keyPressed == 8 {	// C
 				update_previous_values()
@@ -152,6 +154,7 @@ class GameEngine: SKScene {
 //			print("\(keyPressed!) down")
 		}
 
+		drawPPUScreen()
 		if show_cpu {
 			draw_cpu(x: 516, y: 2)
 		}
@@ -176,6 +179,15 @@ class GameEngine: SKScene {
 	let COLOR_RED    = 0xFF0000FF
 	let COLOR_CYAN   = 0xFFFFFF00
 	let COLOR_YELLOW = 0xFF00FFFF
+
+	func drawPPUScreen() {
+		let f = gb.ppu.screen
+		let p = Data(bytesNoCopy: f.pixels.baseAddress!, count: f.pixelCount, deallocator: .none)
+		let texture = SKTexture(data: p, size: CGSize(width: f.width, height: f.height), flipped: true)
+		texture.filteringMode = .nearest
+		screenNode.texture = texture
+		node.addChild(screenNode)
+	}
 	
 	func draw_code(x: Int, y: Int, lines: Int) {
 		guard let mapAsm = mapLines, let keys = keys else {

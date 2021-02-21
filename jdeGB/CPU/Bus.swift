@@ -203,6 +203,9 @@ class Bus {
 		case 0x0100...0x7FFF:
 			cart.write(addr, data)
 		case 0x8000...0x9FFF:	// VRAM, request the data from the PPU
+			if data != 0 {
+				print("writing \(data) to vram[\(addr & 0x7FFF)]")
+			}
 			ppu.write(addr, data)
 		case 0xA000...0xBFFF:	// 8KB External RAM (on cartridge, if any)
 			cart.write(addr, data)
@@ -382,7 +385,7 @@ class Bus {
 		if tac_timer_inc >= tac_timer_interval {
 			tac_timer_inc = 0
 			tac_timer += 1
-			print("timer increased \(clock_count)")
+			//print("timer increased \(clock_count)")
 			if tac_timer >= 256 {
 				tac_timer = timer_modulo
 				cpu.interrupt_request |= 0x04

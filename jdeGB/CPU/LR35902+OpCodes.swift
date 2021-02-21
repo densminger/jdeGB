@@ -1277,7 +1277,7 @@ extension LR35902 {
 			flag_n = false
 			cycles = 4
 		case 0xE9:	// JP (HL)
-			pc = read16(hl)
+			pc = hl
 			cycles = 1
 		case 0xEA:	// LD (a16),A
 			write8(read16(pc), a)
