@@ -48,6 +48,7 @@ class Bus {
 	
 	init() {
 		cpu.connect(bus: self)
+		ppu.connect(bus: self)
 	}
 		
 	func insert_cartridge(_ cart: Cartridge) {
@@ -159,13 +160,13 @@ class Bus {
 			case 0xFF41:	// LCDC Status
 				data = ppu.lcdc_status
 			case 0xFF42:	// SCY
-				break
+				data = ppu.scy
 			case 0xFF43:	// SCX
-				break
+				data = ppu.scx
 			case 0xFF44:	// LY
 				data = ppu.ly
 			case 0xFF45:	// LYC
-				break
+				data = ppu.lyc
 			case 0xFF46:	// DMA Transfer and Start Address
 				data = (dma_page << 8) | dma_byte
 			case 0xFF47:	// BG Palette Data
@@ -299,13 +300,13 @@ class Bus {
 			case 0xFF41:	// LCDC Status
 				ppu.lcdc_status = data
 			case 0xFF42:	// SCY
-				break
+				ppu.scy = data
 			case 0xFF43:	// SCX
-				break
+				ppu.scx = data
 			case 0xFF44:	// LY
 				ppu.ly = data
 			case 0xFF45:	// LYC
-				break
+				ppu.lyc = data
 			case 0xFF46:	// DMA Transfer and Start Address
 				dma_page = data
 				dma_byte = 0x00

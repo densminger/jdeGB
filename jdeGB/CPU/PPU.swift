@@ -8,6 +8,7 @@
 class PPU {
 	var vram = Array(repeating: 0, count: 0x2000)
 	var oam = Array(repeating: 0, count: 160)
+	var bus: Bus!
 	
 	// LCD Control Register
 	var lcdc = 0
@@ -173,7 +174,7 @@ class PPU {
 			}
 		}
 	}
-	var mode_flag: Int {
+	var mode: Int {
 		get {
 			return lcdc_status & 0b0000_0011
 		}
@@ -182,7 +183,15 @@ class PPU {
 		}
 	}
 
-	var ly = 0
+	var ly = 0 {
+		didSet {
+			if lyc_ly_coincidence_interrupt && ly == lyc {
+				// request lcdstat interrupt
+				bus.write(0xFF0F, bus.read(0xFF0F) | 0b0000_0010)
+			}
+		}
+	}
+	var lyc = 0
 	var scx = 0
 	var scy = 0
 	
@@ -195,6 +204,10 @@ class PPU {
 	
 	func write(_ addr: Int, _ data: Int) {
 		vram[addr & 0x7FFF] = data & 0xFF
+	}
+	
+	func connect(bus: Bus) {
+		self.bus = bus
 	}
 	
 	func do_mode_0() {
@@ -222,19 +235,21 @@ class PPU {
 		if ly <= 143 {
 			switch dot_count {
 			case 0:
-				mode_flag = 2
+				mode = 2
 				do_mode_0()
 			case 20:
-				mode_flag = 3
+				mode = 3
 				do_mode_3()
 			case 62:
-				mode_flag = 0
+				mode = 0
 				do_mode_0()
 			case 114:
 				ly += 1
 				dot_count = 0
 				if ly == 144 {
-					mode_flag = 1
+					mode = 1
+					// request v-blank interrupt
+					bus.write(0xFF0F, bus.read(0xFF0F) | 0b0000_0001)
 					do_mode_1()
 				}
 			default:
@@ -246,7 +261,7 @@ class PPU {
 				dot_count = 0
 				if ly == 154 {
 					ly = 0
-					mode_flag = 2
+					mode = 2
 				}
 			}
 		}
