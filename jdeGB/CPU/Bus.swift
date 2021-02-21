@@ -45,6 +45,7 @@ class Bus {
 	var tac_timer_enable = false
 	var tac_timer_interval = 256
 	var tac_timer_inc = 0
+	var timer_modulo = 0
 	
 	init() {
 		cpu.connect(bus: self)
@@ -93,7 +94,7 @@ class Bus {
 			case 0xFF05:	// TIMA
 				data = tac_timer
 			case 0xFF06:	// TMA
-				break
+				data = timer_modulo
 			case 0xFF07:	// TAC
 				var tac_frequency_bits = 0
 				switch (tac_timer_interval) {
@@ -170,15 +171,15 @@ class Bus {
 			case 0xFF46:	// DMA Transfer and Start Address
 				data = (dma_page << 8) | dma_byte
 			case 0xFF47:	// BG Palette Data
-				break
+				data = ppu.bg_palette
 			case 0xFF48:	// Object Palette 0 Data
-				break
+				data = ppu.sprite_palette_0
 			case 0xFF49:	// Object Palette 1 Data
-				break
+				data = ppu.sprite_palette_1
 			case 0xFF4A:	// WY
-				break
+				data = ppu.wy
 			case 0xFF4B:	// WX - 7
-				break
+				data = ppu.wx
 			case 0xFF50:	// enable boot rom
 				data = boot_rom_enabled ? 0 : 1
 			default:
@@ -233,7 +234,7 @@ class Bus {
 			case 0xFF05:	// TIMA
 				break
 			case 0xFF06:	// TMA
-				break
+				timer_modulo = data & 0xff
 			case 0xFF07:	// TAC
 				tac_timer_enable = (data & 0x04) > 0
 				switch (data & 0x03) {
@@ -312,15 +313,15 @@ class Bus {
 				dma_byte = 0x00
 				dma_transfer = true
 			case 0xFF47:	// BG Palette Data
-				break
+				ppu.bg_palette = data
 			case 0xFF48:	// Object Palette 0 Data
-				break
+				ppu.sprite_palette_0 = data
 			case 0xFF49:	// Object Palette 1 Data
-				break
+				ppu.sprite_palette_1 = data
 			case 0xFF4A:	// WY
-				break
+				ppu.wy = data
 			case 0xFF4B:	// WX - 7
-				break
+				ppu.wx = data
 			case 0xFF50:
 				boot_rom_enabled = (data == 0)
 			default:
@@ -381,8 +382,9 @@ class Bus {
 		if tac_timer_inc >= tac_timer_interval {
 			tac_timer_inc = 0
 			tac_timer += 1
+			print("timer increased \(clock_count)")
 			if tac_timer >= 256 {
-				tac_timer -= 256
+				tac_timer = timer_modulo
 				cpu.interrupt_request |= 0x04
 			}
 			

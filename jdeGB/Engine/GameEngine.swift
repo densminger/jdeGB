@@ -74,9 +74,9 @@ class GameEngine: SKScene {
 	}
 
 	override func update(_ currentTime: TimeInterval) {
-//		var cpu_time_elapsed = 0.0
+		var cpu_time_elapsed = 0.0
 		node.removeAllChildren()
-
+		
 		if emulation_run {
 			update_previous_values()
 			
@@ -85,22 +85,29 @@ class GameEngine: SKScene {
 			// while the second version will run at full speed until the ppu is done rendering a frame and then go to the next frame.
 
 			// Version 1: this version will make sure the game engine runs at 60 fps, based on cpu time
+			repeat {
+				gb.clock()
+				cpu_time_elapsed += clock_tick / emulator_speed
+//				if gb.cpu.pc == 0xDEF9 {
+//					while gb.cpu.cycles > 0 {
+//						gb.clock()
+//					}
+//					emulation_run = false
+//					break
+//				}
+			} while cpu_time_elapsed <= frame_duration
+			
+			// Version 2: this block will sync up the frames of the game engine with the frame of the emulation
 //			repeat {
 //				gb.clock()
-//				cpu_time_elapsed += clock_tick / emulator_speed
-////				if gb.cpu.pc == 0xDEF9 {
+////				if gb.cpu.pc == 0x01BA {
 ////					while gb.cpu.cycles > 0 {
 ////						gb.clock()
 ////					}
 ////					emulation_run = false
 ////					break
 ////				}
-//			} while cpu_time_elapsed <= frame_duration
-			
-			// Version 2: this block will sync up the frames of the game engine with the frame of the emulation
-			repeat {
-				gb.clock()
-			} while gb.ppu.ly != 0 || gb.ppu.dot_count != 1
+//			} while gb.ppu.ly != 0 || gb.ppu.dot_count != 1
 		} else {
 			if keyPressed == 8 {	// C
 				update_previous_values()
@@ -114,6 +121,7 @@ class GameEngine: SKScene {
 			gb.reset()
 		} else if keyPressed == 49 {	// space
 			emulation_run = !emulation_run
+			print(emulation_run ? "running!" : "paused")
 		} else if keyPressed == 18 {	// 1
 			update_previous_values()
 			show_cpu = !show_cpu

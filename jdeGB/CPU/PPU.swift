@@ -6,6 +6,11 @@
 //
 
 class PPU {
+	// the colors for the background palette indices
+	//  Each 32-bit int is in the order: AABBGGRR (not RRGGBB like you might suspect)
+	// Alpha is always 100% so it's set to FF
+	let COLORS = [0xFF0FBC9B, 0xFF0FAC8B, 0xFF306230, 0xFF0F380F]
+	
 	var vram = Array(repeating: 0, count: 0x2000)
 	var oam = Array(repeating: 0, count: 160)
 	var bus: Bus!
@@ -194,6 +199,12 @@ class PPU {
 	var lyc = 0
 	var scx = 0
 	var scy = 0
+	var wx = 0
+	var wy = 0
+	
+	var bg_palette = 0b11100100
+	var sprite_palette_0 = 0b11100100
+	var sprite_palette_1 = 0b11100100
 	
 	var clock_count = 0
 	var dot_count = 0

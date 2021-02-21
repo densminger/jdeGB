@@ -146,7 +146,7 @@ class LR35902 {
 	// If an interrupt is requested, the appropriate flag is set in interrupt_request.
 	// This only causes an interrupt to occur if BOTH the Interrupt Master Enable flag
 	// is true, AND the corresponding bit in interrupt_enable is set.
-	var interrupt_enable = 0x1F	// enable all interrupts at start
+	var interrupt_enable = 0x00	// disable all interrupts at start
 	var interrupt_request = 0x00
 	
 	// This is the number of cycles to wait until the next operation can occur.
@@ -222,8 +222,8 @@ class LR35902 {
 		write8(0xFF4B, 0x00)	// WX
 		write8(0xFFFF, 0x00)	// IE
 		
-		pc = 0x00					// start at internal rom address 0x00
-		write8(0xFF50, 0)		// enable boot rom (0 = enable, 1 = disable)
+		pc = 0x100					// start at internal rom address 0x00
+		write8(0xFF50, 1)		// enable boot rom (0 = enable, 1 = disable)
 	}
 	
 	func clock() {
@@ -255,10 +255,6 @@ class LR35902 {
 	}
 	
 	func irq() {
-		if !ime {
-			return
-		}
-
 		// CPU will resume operation upon interrupt if a halt instruction was issued
 		halt = false
 		
@@ -296,8 +292,9 @@ class LR35902 {
 			// huh??  unexpected interrupt.
 			// just take the pc off the stack and continue
 			sp += 2
-			return
 		}
+		
+		interrupt_request = 0
 		
 		// this interupt request takes 5 cycles to complete
 		cycles = 5

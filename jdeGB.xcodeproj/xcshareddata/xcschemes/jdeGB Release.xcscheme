@@ -53,7 +53,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "file"
-            value = "/Users/david/Downloads/sml.gb"
+            value = "/Users/david/Downloads/blargg-test-roms-master/instr_timing/source/test.o"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
