@@ -203,9 +203,6 @@ class Bus {
 		case 0x0100...0x7FFF:
 			cart.write(addr, data)
 		case 0x8000...0x9FFF:	// VRAM, request the data from the PPU
-			if data != 0 {
-				print("writing \(data) to vram[\(addr & 0x7FFF)]")
-			}
 			ppu.write(addr, data)
 		case 0xA000...0xBFFF:	// 8KB External RAM (on cartridge, if any)
 			cart.write(addr, data)

@@ -76,7 +76,7 @@ class GameEngine: SKScene {
 	}
 
 	override func update(_ currentTime: TimeInterval) {
-		var cpu_time_elapsed = 0.0
+//		var cpu_time_elapsed = 0.0
 		node.removeAllChildren()
 		
 		if emulation_run {
@@ -102,13 +102,13 @@ class GameEngine: SKScene {
 			// Version 2: this block will sync up the frames of the game engine with the frame of the emulation
 			repeat {
 				gb.clock()
-				if gb.cpu.pc == 0x0100 {
-					while gb.cpu.cycles > 0 {
-						gb.clock()
-					}
-					emulation_run = false
-					break
-				}
+//				if gb.cpu.pc == 0x0100 {
+//					while gb.cpu.cycles > 0 {
+//						gb.clock()
+//					}
+//					emulation_run = false
+//					break
+//				}
 			} while gb.ppu.ly != 0 || gb.ppu.dot_count != 1
 		} else {
 			if keyPressed == 8 {	// C

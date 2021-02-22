@@ -204,10 +204,7 @@ class PPU {
 	var wx = 0
 	var wy = 0
 	
-	var bg_palette = 0b11100100
-	func bg_palette_index(_ i: Int) -> Int {
-		return (bg_palette & (0b11 << (i*2))) >> (i*2)
-	}
+	var bg_palette = 0x00
 	var sprite_palette_0 = 0b11100100
 	var sprite_palette_1 = 0b11100100
 	
@@ -226,15 +223,17 @@ class PPU {
 		self.bus = bus
 	}
 	
-	func do_mode_0() {
+	func bg_palette_index(_ i: Int) -> Int {
+		return (bg_palette & (0b11 << (i*2))) >> (i*2)
 	}
-	
-	func do_mode_1() {
+
+	// this is for debugging
+	func write_tilsets_to_screen() {
 		for tile in 0..<128 {
 			for y in 0..<8 {
 				for x in 0..<8 {
-					let byte1 = vram[0x0800*0 + tile*16 + 2*y+1]
-					let byte0 = vram[0x0800*0 + tile*16 + 2*y]
+					let byte1 = vram[0x0800*(tile_data_select==0 ? 2 : 0) + tile*16 + 2*y+1]
+					let byte0 = vram[0x0800*(tile_data_select==0 ? 2 : 0) + tile*16 + 2*y]
 					let shift = 7-x
 					let palette_index = ((byte1 & (1 << shift)) >> (shift-1)) | ((byte0 & (1 << shift)) >> shift)
 					let bg_color = bg_palette_index(palette_index)
@@ -256,10 +255,48 @@ class PPU {
 		}
 	}
 	
+	func do_mode_0() {
+	}
+	
+	func do_mode_1() {
+//		for y in 0..<32 {
+//			for x in 0..<32 {
+//				print("\(String(format: "%02i", bus.read(0x9800 + (bg_tile_map_display_select * 0x0400) + y*32 + x))) ", terminator: "")
+//			}
+//			print("")
+//		}
+//		print("------")
+	}
+	
 	func do_mode_2() {
 	}
 	
 	func do_mode_3() {
+		if bg_window_priority {
+			let y = ly
+			for x in 0..<160 {
+				let nx = (x + scx) % 1024
+				let ny = (y + scy) % 1024
+				let tilei = (ny/8)*32 + nx/8
+				let tile = bus.read(0x9800 + (bg_tile_map_display_select * 0x0400) + tilei)
+				let addr: Int
+				if tile > 127 {
+					addr = 0x8800 + ((tile-128)*16) + (2*((y+scy)%8))
+				} else {
+					addr = 0x8000 + (tile_data_select == 0 ? 0x1000 : 0) + (tile*16) + (2*((y+scy)%8))
+				}
+				let byte1 = bus.read(addr+1)
+				let byte0 = bus.read(addr)
+				if byte1 != 0 || byte0 != 0 {
+					lyc += 0
+				}
+				let shift = 7-((scx + x)%8)
+				let palette_index = ((byte1 & (1 << shift)) >> (shift-1)) | ((byte0 & (1 << shift)) >> shift)
+				let bg_color = bg_palette_index(palette_index)
+				screen[x,y] = COLORS[bg_color]
+//				print("x,y = (\(x),\(y)), scx,scy = (\(scx),\(scy)), tilei=\(tilei), tile=\(tile), addr=\(addr), byte0=\(byte0), byte1=\(byte1)")
+			}
+		}
 	}
 	
 	func clock() {
@@ -305,7 +342,7 @@ class PPU {
 				}
 			}
 		}
-		
+
 		dot_count += 1
 		clock_count += 1
 	}
