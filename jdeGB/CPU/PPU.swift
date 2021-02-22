@@ -275,21 +275,18 @@ class PPU {
 		if bg_window_priority {
 			let y = ly
 			for x in 0..<160 {
-				let nx = (x + scx) % 1024
-				let ny = (y + scy) % 1024
+				let nx = (x + scx) % 256
+				let ny = (y + scy) % 256
 				let tilei = (ny/8)*32 + nx/8
 				let tile = bus.read(0x9800 + (bg_tile_map_display_select * 0x0400) + tilei)
 				let addr: Int
 				if tile > 127 {
-					addr = 0x8800 + ((tile-128)*16) + (2*((y+scy)%8))
+					addr = 0x8800 + ((tile-128)*16) + (2*(ny%8))
 				} else {
-					addr = 0x8000 + (tile_data_select == 0 ? 0x1000 : 0) + (tile*16) + (2*((y+scy)%8))
+					addr = 0x8000 + (tile_data_select == 0 ? 0x1000 : 0) + (tile*16) + (2*(ny%8))
 				}
 				let byte1 = bus.read(addr+1)
 				let byte0 = bus.read(addr)
-				if byte1 != 0 || byte0 != 0 {
-					lyc += 0
-				}
 				let shift = 7-((scx + x)%8)
 				let palette_index = ((byte1 & (1 << shift)) >> (shift-1)) | ((byte0 & (1 << shift)) >> shift)
 				let bg_color = bg_palette_index(palette_index)
