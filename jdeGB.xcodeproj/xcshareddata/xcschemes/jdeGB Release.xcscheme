@@ -58,7 +58,7 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "file"
-            value = "/Users/david/Downloads/sml.gb"
+            value = "/Users/david/Downloads/Double Dragon (U) [!].gb"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

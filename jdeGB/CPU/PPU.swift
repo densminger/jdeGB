@@ -360,7 +360,7 @@ class PPU {
 						let palette_index = ((byte1 & (1 << shift)) >> (shift-1)) | ((byte0 & (1 << shift)) >> shift)
 						spr_color = spr_palette_index(palette_index, palette: (attr & 0b0001_0000) >> 4)
 //						if tile == 194 || tile == 195 || tile == 210 || tile == 211 { print("x:\(x), y:\(y), spr_x:\(spr_x), spr_y:\(spr_y), tile:\(tile), attr:\(attr), byte1:\(byte1), byte0:\(byte0), sprite_palette_0:\(sprite_palette_0), sprite_palette_1:\(sprite_palette_1), spr_color:\(spr_color), bg_color:\(bg_color)") }
-						if spr_color != 0 && (attr & 0b1000_0000 == 0 || (attr & 0b1000_0000 > 0 && bg_color == 0)) {
+						if palette_index != 0 && (attr & 0b1000_0000 == 0 || (attr & 0b1000_0000 > 0 && bg_color == 0)) {
 							screen[x,y] = COLORS[spr_color]
 							break
 						}
