@@ -73,7 +73,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "file"
-            value = "/Users/david/Downloads/sml.gb"
+            value = "/Users/david/Downloads/tetris.gb"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

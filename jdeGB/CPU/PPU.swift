@@ -17,6 +17,8 @@ class PPU {
 	
 	var screen = Sprite(width: 160, height: 144)
 	
+	var scanline_sprite_ids = Array<Int>()
+	
 	// LCD Control Register
 	var lcdc = 0
 	var lcd_display_enable: Bool {
@@ -82,9 +84,9 @@ class PPU {
 			}
 		}
 	}
-	var sprite_small: Bool {
+	var sprite_large: Bool {
 		get {
-			return lcdc & 0b0000_0100 > 0
+			return lcdc & 0b0000_0100 != 0
 		}
 		set(v) {
 			if (v) {
@@ -210,6 +212,9 @@ class PPU {
 	
 	var clock_count = 0
 	var dot_count = 0
+	
+	// This is just for debugging
+	var display_rendering_enabled = true
 
 	func read(_ addr: Int) -> Int {
 		return vram[addr & 0x7FFF] & 0xFF
@@ -227,32 +232,45 @@ class PPU {
 		return (bg_palette & (0b11 << (i*2))) >> (i*2)
 	}
 
+	func spr_palette_index(_ i: Int, palette: Int) -> Int {
+		if palette == 0 {
+			return (sprite_palette_0 & (0b11 << (i*2))) >> (i*2)
+		} else {
+			return (sprite_palette_1 & (0b11 << (i*2))) >> (i*2)
+		}
+	}
+
 	// this is for debugging
-	func write_tilsets_to_screen() {
+	func write_tilset(_ tileset: Int, to buffer: Sprite) {
+		let tiles_across = buffer.width/8
 		for tile in 0..<128 {
 			for y in 0..<8 {
 				for x in 0..<8 {
-					let byte1 = vram[0x0800*(tile_data_select==0 ? 2 : 0) + tile*16 + 2*y+1]
-					let byte0 = vram[0x0800*(tile_data_select==0 ? 2 : 0) + tile*16 + 2*y]
+					let byte1 = vram[0x0800*tileset + tile*16 + 2*y+1]
+					let byte0 = vram[0x0800*tileset + tile*16 + 2*y]
 					let shift = 7-x
 					let palette_index = ((byte1 & (1 << shift)) >> (shift-1)) | ((byte0 & (1 << shift)) >> shift)
 					let bg_color = bg_palette_index(palette_index)
-					screen[(tile*8 + x) % 160,(tile/20)*8 + y] = COLORS[bg_color]
+					buffer[(tile*8 + x) % buffer.width,(tile/tiles_across)*8 + y] = COLORS[bg_color]
 				}
 			}
 		}
-		for tile in 0..<128 {
-			for y in 0..<8 {
-				for x in 0..<8 {
-					let byte1 = vram[0x0800*1 + tile*16 + 2*y+1]
-					let byte0 = vram[0x0800*1 + tile*16 + 2*y]
-					let shift = 7-x
-					let palette_index = ((byte1 & (1 << shift)) >> (shift-1)) | ((byte0 & (1 << shift)) >> shift)
-					let bg_color = bg_palette_index(palette_index)
-					screen[(tile*8 + x) % 160,(tile/20)*8 + y + 7*8] = COLORS[bg_color]
-				}
-			}
-		}
+	}
+	
+	func get_oam_y(index: Int) -> Int {
+		return oam[index * 4 + 0]
+	}
+	
+	func get_oam_x(index: Int) -> Int {
+		return oam[index * 4 + 1]
+	}
+	
+	func get_oam_tile(index: Int) -> Int {
+		return oam[index * 4 + 2]
+	}
+	
+	func get_oam_attr(index: Int) -> Int {
+		return oam[index * 4 + 3]
 	}
 	
 	func do_mode_0() {
@@ -269,12 +287,33 @@ class PPU {
 	}
 	
 	func do_mode_2() {
+		// get a list of the (up to) 10 sprites that will be on this line
+		scanline_sprite_ids.removeAll()
+		for i in 0..<40 {
+			let y = get_oam_y(index: i)
+			
+			let top = y - 16
+			let bottom = top + (sprite_large ? 16 : 8)
+			if ly >= top && ly < bottom {
+				scanline_sprite_ids.append(i)
+			}
+			
+			// maximum of 10
+			if scanline_sprite_ids.count == 10 {
+				break
+			}
+		}
 	}
 	
 	func do_mode_3() {
-		if bg_window_priority {
-			let y = ly
-			for x in 0..<160 {
+		if !display_rendering_enabled {
+			return
+		}
+		let y = ly
+		var bg_color = 0
+		var spr_color = 0
+		for x in 0..<160 {
+			if bg_window_priority {
 				let nx = (x + scx) % 256
 				let ny = (y + scy) % 256
 				let tilei = (ny/8)*32 + nx/8
@@ -289,9 +328,44 @@ class PPU {
 				let byte0 = bus.read(addr)
 				let shift = 7-((scx + x)%8)
 				let palette_index = ((byte1 & (1 << shift)) >> (shift-1)) | ((byte0 & (1 << shift)) >> shift)
-				let bg_color = bg_palette_index(palette_index)
+				bg_color = bg_palette_index(palette_index)
 				screen[x,y] = COLORS[bg_color]
-//				print("x,y = (\(x),\(y)), scx,scy = (\(scx),\(scy)), tilei=\(tilei), tile=\(tile), addr=\(addr), byte0=\(byte0), byte1=\(byte1)")
+			}
+			if sprite_display_enable {
+				for i in scanline_sprite_ids {
+					let spr_x = get_oam_x(index: i)
+					let spr_y = get_oam_y(index: i)
+					let left = spr_x - 8
+					let right = left + 8
+					let top = spr_y - 16
+					if x >= left && x < right {
+						var tile = get_oam_tile(index: i)
+//						if scanline_sprite_ids.count > 1 { print("\(x),\(y): oam#:\(i) scanline_sprite_ids:\(scanline_sprite_ids)") }
+						if sprite_large {
+							tile &= 0xFE
+							if y-top >= 8 { tile += 1 }
+						}
+						let attr = get_oam_attr(index: i)
+						var sprite_row = y - top
+						if attr & 0b0100_0000 > 0 {	// vflip
+							sprite_row = 7 - sprite_row
+						}
+						let addr = 0x8000 + (tile*16) + 2*(sprite_row % 8)
+						let byte1 = bus.read(addr+1)
+						let byte0 = bus.read(addr)
+						var shift = ((x-left)%8)
+						if attr & 0b0010_0000 == 0 {	// hflip
+							shift = 7-shift
+						}
+						let palette_index = ((byte1 & (1 << shift)) >> (shift-1)) | ((byte0 & (1 << shift)) >> shift)
+						spr_color = spr_palette_index(palette_index, palette: (attr & 0b0001_0000) >> 4)
+//						if tile == 194 || tile == 195 || tile == 210 || tile == 211 { print("x:\(x), y:\(y), spr_x:\(spr_x), spr_y:\(spr_y), tile:\(tile), attr:\(attr), byte1:\(byte1), byte0:\(byte0), sprite_palette_0:\(sprite_palette_0), sprite_palette_1:\(sprite_palette_1), spr_color:\(spr_color), bg_color:\(bg_color)") }
+						if spr_color != 0 && (attr & 0b1000_0000 == 0 || (attr & 0b1000_0000 > 0 && bg_color == 0)) {
+							screen[x,y] = COLORS[spr_color]
+							break
+						}
+					}
+				}
 			}
 		}
 	}
@@ -310,7 +384,7 @@ class PPU {
 			switch dot_count {
 			case 0:
 				mode = 2
-				do_mode_0()
+				do_mode_2()
 			case 20:
 				mode = 3
 				do_mode_3()
@@ -319,7 +393,7 @@ class PPU {
 				do_mode_0()
 			case 114:
 				ly += 1
-				dot_count = 0
+				dot_count = -1
 				if ly == 144 {
 					mode = 1
 					// request v-blank interrupt
@@ -332,10 +406,9 @@ class PPU {
 		} else {
 			if dot_count == 114 {
 				ly += 1
-				dot_count = 0
-				if ly == 154 {
+				dot_count = -1
+				if ly == 156 {	// setting this to ly == 156 (instead of 153) prevents the top couple of lines from scrolling weird
 					ly = 0
-					mode = 2
 				}
 			}
 		}

@@ -35,6 +35,10 @@ class Bus {
 	var dma_page = 0x00
 	var dma_byte = 0x00
 	
+	var joypad_buttons = 0b0010_0000
+	var joypad_directions = 0b0001_0000
+	var joypad_request = 0x00
+	
 	var serial = 0
 
 	var cart: Cartridge!
@@ -45,7 +49,7 @@ class Bus {
 	var tac_timer_enable = false
 	var tac_timer_interval = 256
 	var tac_timer_inc = 0
-	var timer_modulo = 0
+	var timer_modulo = 256
 	
 	init() {
 		cpu.connect(bus: self)
@@ -84,7 +88,11 @@ class Bus {
 		case 0xFF00...0xFF7F:			// I/O Registers
 			switch addr {
 			case 0xFF00:	// Joypad
-				break
+				if joypad_request & 0x30 == 0x10 {	// direction
+					return ~joypad_buttons
+				} else if joypad_request & 0x30 == 0x20 {	// buttons
+					return ~joypad_directions
+				}
 			case 0xFF01:	// Serial transfer Data
 				data = serial
 			case 0xFF02:	// Serial transfer Control
@@ -215,7 +223,7 @@ class Bus {
 		case 0xFF00...0xFF7F:	// I/O Registers
 			switch addr {
 			case 0xFF00:	// Joypad
-				break
+				joypad_request = data
 			case 0xFF01:	// Serial transfer Data
 				serial = data
 			case 0xFF02:	// Serial transfer Control

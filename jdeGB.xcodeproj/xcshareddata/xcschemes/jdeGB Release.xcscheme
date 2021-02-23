@@ -52,6 +52,11 @@
       </BuildableProductRunnable>
       <EnvironmentVariables>
          <EnvironmentVariable
+            key = "file2"
+            value = "/Users/david/Downloads/2ND_GB/2ND - FINISHED.gb"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
             key = "file"
             value = "/Users/david/Downloads/sml.gb"
             isEnabled = "YES">

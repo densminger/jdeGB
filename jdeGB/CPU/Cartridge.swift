@@ -126,7 +126,7 @@ class Cartridge {
 		case 0x6000...0x7FFF:
 			mbc.bank_mode = data & 0x01
 		case 0xA000...0xBFFF where ram != nil:
-			let mapped_addr = mbc.read_addr(addr: addr)
+			let mapped_addr = mbc.write_addr(addr: addr)
 			ram![mapped_addr] = data & 0xFF
 		default:
 			break

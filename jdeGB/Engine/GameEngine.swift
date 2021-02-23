@@ -15,9 +15,11 @@ class GameEngine: SKScene {
 	private let node: SKSpriteNode
 	private let screenNode: SKSpriteNode
 	private let screenFrame: Sprite
+	private let tileSets = Array(repeating: Sprite(width: 128, height: 64), count: 3)
 	
 	var show_cpu = true
 	var show_code = true
+	var show_tilesets = true
 	
 	var emulation_run = false
 	
@@ -41,8 +43,11 @@ class GameEngine: SKScene {
 		screenFrame = Sprite(width: GameEngine.width, height: GameEngine.height)
 
 		screenNode = SKSpriteNode()
+		let screenWidth = 480
+		let screenHeight = 432
 		screenNode.anchorPoint = CGPoint(x: 0, y: 0)
-		screenNode.size = CGSize(width: 512, height: 480)
+		screenNode.position = CGPoint(x: 0, y: GameEngine.height - screenHeight)
+		screenNode.size = CGSize(width: screenWidth, height: screenHeight)
 
 		super.init(size: screenSize)
 
@@ -69,10 +74,58 @@ class GameEngine: SKScene {
 	
 	override func keyDown(with event: NSEvent) {
 		keyPressed = event.keyCode
+		switch (event.keyCode) {
+		case 126:	// up
+			gb.joypad_directions |= 0b0001_0100
+			gb.cpu.interrupt_request |= 0b0001_0000
+		case 125:	// down
+			gb.joypad_directions |= 0b0001_1000
+			gb.cpu.interrupt_request |= 0b0001_0000
+		case 123:	// left
+			gb.joypad_directions |= 0b0001_0010
+			gb.cpu.interrupt_request |= 0b0001_0000
+		case 124:	// right
+			gb.joypad_directions |= 0b0001_0001
+			gb.cpu.interrupt_request |= 0b0001_0000
+		case 6:		// z
+			gb.joypad_buttons |= 0b0010_0010
+			gb.cpu.interrupt_request |= 0b0001_0000
+		case 7:		// x
+			gb.joypad_buttons |= 0b0010_0001
+			gb.cpu.interrupt_request |= 0b0001_0000
+		case 36:	// enter
+			gb.joypad_buttons |= 0b0010_1000
+			//gb.cpu.interrupt_request |= 0b0001_0000
+		case 48:	// tab
+			gb.joypad_buttons |= 0b0010_0100
+			gb.cpu.interrupt_request |= 0b0001_0000
+		default:
+			break
+		}
 	}
 	
 	override func keyUp(with event: NSEvent) {
 		keyPressed = nil
+		switch (event.keyCode) {
+		case 126:	// up
+			gb.joypad_directions &= 0b1110_1011
+		case 125:	// down
+			gb.joypad_directions &= 0b1110_0111
+		case 123:	// left
+			gb.joypad_directions &= 0b1110_1101
+		case 124:	// right
+			gb.joypad_directions &= 0b1110_1110
+		case 6:		// z
+			gb.joypad_buttons &= 0b1101_1101
+		case 7:		// x
+			gb.joypad_buttons &= 0b1101_1110
+		case 36:	// enter
+			gb.joypad_buttons &= 0b1101_0111
+		case 48:	// tab
+			gb.joypad_buttons &= 0b1101_1011
+		default:
+			break
+		}
 	}
 
 	override func update(_ currentTime: TimeInterval) {
@@ -90,13 +143,13 @@ class GameEngine: SKScene {
 //			repeat {
 //				gb.clock()
 //				cpu_time_elapsed += clock_tick / emulator_speed
-//				if gb.cpu.pc == 0x0100 {
-//					while gb.cpu.cycles > 0 {
-//						gb.clock()
-//					}
-//					emulation_run = false
-//					break
-//				}
+////				if gb.cpu.pc == 0x0100 {
+////					while gb.cpu.cycles > 0 {
+////						gb.clock()
+////					}
+////					emulation_run = false
+////					break
+////				}
 //			} while cpu_time_elapsed <= frame_duration
 			
 			// Version 2: this block will sync up the frames of the game engine with the frame of the emulation
@@ -129,6 +182,8 @@ class GameEngine: SKScene {
 			show_cpu = !show_cpu
 		} else if keyPressed == 19 {	// 2
 			show_code = !show_code
+		} else if keyPressed == 20 {	// 3
+			show_tilesets = !show_tilesets
 		} else if keyPressed == 24 {	// + / =
 			emulator_speed += 0.0005
 			if emulator_speed > 1 {
@@ -150,8 +205,10 @@ class GameEngine: SKScene {
 		} else if keyPressed == 2 { 	// d
 			mapLines = gb.cpu.disassemble(start: 0x0000, end: 0xFFFF)
 			keys = Array(mapLines!.keys).sorted()
-//		} else if keyPressed != nil {
-//			print("\(keyPressed!) down")
+		} else if keyPressed == 4 {
+			gb.ppu.display_rendering_enabled = !gb.ppu.display_rendering_enabled
+		} else if keyPressed != nil {
+			print("\(keyPressed!) down")
 		}
 
 		drawPPUScreen()
@@ -160,6 +217,9 @@ class GameEngine: SKScene {
 		}
 		if show_code {
 			draw_code(x: 516, y: 82, lines: 26)
+		}
+		if show_tilesets {
+			draw_tilesets(x: 516, y: 0)
 		}
 	
 		keyPressed = nil
@@ -235,6 +295,27 @@ class GameEngine: SKScene {
 		node.drawString(x: x , y: y + 40, text: "DE: #" +  hex(gb.cpu.de, 4) + "  [" + String(gb.cpu.d) + ", " + String(gb.cpu.e) + "]", color: gb.cpu.de == p_de ? COLOR_WHITE : COLOR_YELLOW)
 		node.drawString(x: x , y: y + 50, text: "HL: #" +  hex(gb.cpu.hl, 4) + "  [" + String(gb.cpu.h) + ", " + String(gb.cpu.l) + "]", color: gb.cpu.hl == p_hl ? COLOR_WHITE : COLOR_YELLOW)
 		node.drawString(x: x , y: y + 60, text: "SP: $" + hex(gb.cpu.sp, 4), color: gb.cpu.sp == p_sp ? COLOR_WHITE : COLOR_YELLOW)
+	}
+	
+	func draw_tilesets(x: Int, y: Int) {
+		for i in 0..<3 {
+			gb.ppu.write_tilset(i, to: tileSets[i])
+			let f = tileSets[i]
+			let pattern = SKSpriteNode()
+			pattern.anchorPoint = CGPoint(x: 0, y: 0)
+			if i < 2 {
+				pattern.position = CGPoint(x: x + f.width*i + (i == 1 ? 10 : 0), y: y + f.height + 10)
+			} else {
+				pattern.position = CGPoint(x: x, y: y)
+			}
+			pattern.size = CGSize(width: f.width, height: f.height)
+			let p = Data(bytesNoCopy: f.pixels.baseAddress!, count: f.pixelCount, deallocator: .none)
+			let texture = SKTexture(data: p, size: CGSize(width: f.width, height: f.height), flipped: true)
+			texture.filteringMode = .nearest
+			pattern.texture = texture
+			node.addChild(pattern)
+		}
+
 	}
 
 
