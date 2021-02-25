@@ -263,7 +263,9 @@ class Bus {
 				cpu.interrupt_request = data & 0xFF
 			case 0xFF10:	// Channel 1 Sweep Register
 				apu.channel1.sweep_timer = (data & 0b0111_0000) >> 4
-				// TODO: Finish the sweep stuff
+				apu.channel1.sweep_shift = (data & 0b0000_0111)
+				apu.channel1.sweep_increase = (data & 0b0000_1000) > 0
+				apu.channel1.sweep_enable = true
 			case 0xFF11:	// Channel 1 Sound Length/Wave pattern duty
 				switch (data & 0b1100_0000) >> 6 {
 				case 0b00:
@@ -282,13 +284,15 @@ class Bus {
 			case 0xFF12:	// Channel 1 Volume Envelope
 				let volume = (data & 0b1111_0000) >> 4
 				apu.channel1.volume = Float(volume)/15.0
+				apu.channel1.volume_envelope_counter = data & 0b0000_0111
+				apu.channel1.volume_envelope_increase = data & 0b0000_1000 > 0
 			case 0xFF13:	// Channel 1 Frequency lo
 				apu.channel1.freq_lohi = (apu.channel1.freq_lohi & 0xFF00) + data
-				apu.channel1.frequency = 131072/(2048-apu.channel1.freq_lohi)
 			case 0xFF14:	// Channel 1 Frequency hi
 				apu.channel1.freq_lohi = (apu.channel1.freq_lohi & 0x00FF) + ((data & 7) << 8)
 				apu.channel1.frequency = 131072/(2048-apu.channel1.freq_lohi)
 				apu.channel1.length_enable = data & 0b0100_0000 > 0
+				apu.channel1.channel_enable = data & 0b1000_0000 > 0
 			case 0xFF16:	// Channel 2 Sound Length/Wave pattern duty
 				switch (data & 0b1100_0000) >> 6 {
 				case 0b00:
@@ -307,13 +311,15 @@ class Bus {
 			case 0xFF17:	// Channel 2 Volume Envelope
 				let volume = (data & 0b1111_0000) >> 4
 				apu.channel2.volume = Float(volume)/15.0
+				apu.channel2.volume_envelope_counter = data & 0b0000_0111
+				apu.channel2.volume_envelope_increase = data & 0b0000_1000 > 0
 			case 0xFF18:	// Channel 2 Frequency lo
 				apu.channel2.freq_lohi = (apu.channel2.freq_lohi & 0xFF00) + data
-				apu.channel2.frequency = 131072/(2048-apu.channel2.freq_lohi)
 			case 0xFF19:	// Channel 2 Frequency hi
 				apu.channel2.freq_lohi = (apu.channel2.freq_lohi & 0x00FF) + ((data & 7) << 8)
 				apu.channel2.frequency = 131072/(2048-apu.channel2.freq_lohi)
 				apu.channel2.length_enable = data & 0b0100_0000 > 0
+				apu.channel2.channel_enable = data & 0b1000_0000 > 0
 			case 0xFF1A:	// Channel 3 Sound on/off
 				break
 			case 0xFF1B:	// Channel 3 Sound Length
