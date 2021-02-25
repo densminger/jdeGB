@@ -207,8 +207,8 @@ class GameEngine: SKScene {
 			keys = Array(mapLines!.keys).sorted()
 		} else if keyPressed == 4 {
 			gb.ppu.display_rendering_enabled = !gb.ppu.display_rendering_enabled
-		} else if keyPressed != nil {
-			print("\(keyPressed!) down")
+//		} else if keyPressed != nil {
+//			print("\(keyPressed!) down")
 		}
 
 		drawPPUScreen()

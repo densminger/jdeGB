@@ -8,6 +8,7 @@
 class Bus {
 	let cpu = LR35902()
 	let ppu = PPU()
+	let apu = APU()
 
 	var clock_count = 0
 	
@@ -261,23 +262,65 @@ class Bus {
 			case 0xFF0F:	// Interrupt Request
 				cpu.interrupt_request = data & 0xFF
 			case 0xFF10:	// Channel 1 Sweep Register
-				break
+				apu.channel1.sweep_time = (data & 0b0111_0000) >> 4
+				apu.channel1.sweep_increase = (data & 0b0000_1000) > 0
+				apu.channel1.sweep_shift = data & 0b0000_0111
 			case 0xFF11:	// Channel 1 Sound Length/Wave pattern duty
-				break
+				switch (data & 0b1100_0000) >> 6 {
+				case 0b00:
+					apu.channel1.duty = 0.125
+				case 0b01:
+					apu.channel1.duty = 0.25
+				case 0b10:
+					apu.channel1.duty = 0.50
+				case 0b11:
+					apu.channel1.duty = 0.75
+				default:
+					break
+				}
+				let sound_length_bits = data & 0b0011_1111
+				apu.channel1.sound_length = Int((Double(64 - sound_length_bits)/256.0)*Double(apu.channel1.sample_rate))
 			case 0xFF12:	// Channel 1 Volume Envelope
-				break
+				let volume = (data & 0b1111_0000) >> 4
+				apu.channel1.volume = Float(volume)/15.0
 			case 0xFF13:	// Channel 1 Frequency lo
-				break
+				apu.channel1.NR13_14 = (apu.channel1.NR13_14 & 0xFF00) + data
+				apu.channel1.frequency = 131072/(2048-apu.channel1.NR13_14)
+				if apu.channel1.volume == 0 {
+					apu.channel1.volume = 1
+				}
 			case 0xFF14:	// Channel 1 Frequency hi
-				break
+				apu.channel1.NR13_14 = (apu.channel1.NR13_14 & 0x00FF) + ((data & 7) << 8)
+				apu.channel1.frequency = 131072/(2048-apu.channel1.NR13_14)
+				apu.channel1.sound_length_active = data & 0b0100_0000 > 0
 			case 0xFF16:	// Channel 2 Sound Length/Wave pattern duty
-				break
+				switch (data & 0b1100_0000) >> 6 {
+				case 0b00:
+					apu.channel2.duty = 0.125
+				case 0b01:
+					apu.channel2.duty = 0.25
+				case 0b10:
+					apu.channel2.duty = 0.50
+				case 0b11:
+					apu.channel2.duty = 0.75
+				default:
+					break
+				}
+				let sound_length_bits = data & 0b0011_1111
+				apu.channel2.sound_length = Int((Double(64 - sound_length_bits)/256.0)*Double(apu.channel2.sample_rate))
 			case 0xFF17:	// Channel 2 Volume Envelope
-				break
+				let volume = (data & 0b1111_0000) >> 4
+				apu.channel2.volume = Float(volume)/15.0
 			case 0xFF18:	// Channel 2 Frequency lo
-				break
+				apu.channel2.NR13_14 = (apu.channel2.NR13_14 & 0xFF00) + data
+				apu.channel2.frequency = 131072/(2048-apu.channel2.NR13_14)
+				if apu.channel2.volume == 0 {
+					apu.channel2.volume = 1
+				}
 			case 0xFF19:	// Channel 2 Frequency hi
-				break
+				apu.channel2.NR13_14 = (apu.channel2.NR13_14 & 0x00FF) + ((data & 7) << 8)
+				apu.channel2.frequency = 131072/(2048-apu.channel2.NR13_14)
+				apu.channel2.sound_length_active = data & 0b0100_0000 > 0
 			case 0xFF1A:	// Channel 3 Sound on/off
 				break
 			case 0xFF1B:	// Channel 3 Sound Length
@@ -332,6 +375,8 @@ class Bus {
 				ppu.wx = data
 			case 0xFF50:
 				boot_rom_enabled = (data == 0)
+				apu.channel1.volume = 0
+				apu.channel2.volume = 0
 			default:
 				break
 			}
