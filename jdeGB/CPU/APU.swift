@@ -8,8 +8,8 @@
 import AVFoundation
 
 class APU {
-	public let channel1 = Channelnew(signal: Oscillator.square)
-	public let channel2 = Channelnew(signal: Oscillator.square)
+	public let channel1 = Channel(signal: Oscillator.square)
+	public let channel2 = Channel(signal: Oscillator.square)
 	
 	public var volume: Float {
 		set {
