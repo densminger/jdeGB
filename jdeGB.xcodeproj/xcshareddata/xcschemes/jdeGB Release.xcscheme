@@ -58,7 +58,7 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "file"
-            value = "/Users/david/Downloads/Double Dragon (U) [!].gb"
+            value = "/Users/david/Downloads/Castlevania Adventure, The (E) [!].gb"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
