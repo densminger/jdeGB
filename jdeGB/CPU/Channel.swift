@@ -25,6 +25,7 @@ class Channel {
 	public var length_enable = false
 	
 	public var volume_envelope_counter = 0
+	public var volume_envelope_counter_restart_value = 0
 	public var volume_envelope_increase = false
 	
 	public var sweep_timer = 0 {
@@ -49,6 +50,7 @@ class Channel {
 			internal_volume = Int(15.0 * v)
 		}
 	}
+	public var volume_restart_value: Float = 0
 	
 	public var channel_enable = false
 	
@@ -88,7 +90,7 @@ class Channel {
 	private func length_clock() {
 		if length_enable {
 			length_counter -= 1
-			if length_counter == 0 {
+			if length_counter <= 0 {
 				internal_volume = 0
 				channel_enable = false
 				length_enable = false
@@ -102,24 +104,33 @@ class Channel {
 		}
 		sweep_timer -= 1
 		if sweep_timer <= 0 {
-			sweep_frequency_shadow = frequency
-			sweep_timer = sweep_reload
-			sweep_enable = sweep_shift != 0
-			if sweep_increase {
-				sweep_frequency_shadow += (frequency >> sweep_shift)
-			} else {
-				sweep_frequency_shadow -= (frequency >> sweep_shift)
-			}
-			if sweep_frequency_shadow > 2047 {
-				sweep_enable = false
-			}
-			frequency = sweep_frequency_shadow
+			sweep_trigger()
 		}
 	}
 	
+	public func sweep_trigger() {
+		sweep_timer = sweep_reload
+		sweep_enable = sweep_shift != 0
+		sweep_frequency_shadow = frequency
+		if sweep_increase {
+			sweep_frequency_shadow += (frequency >> sweep_shift)
+		} else {
+			sweep_frequency_shadow -= (frequency >> sweep_shift)
+		}
+		if sweep_frequency_shadow > 2047 {
+			sweep_frequency_shadow -= 2048
+			sweep_enable = false
+		}
+		frequency = sweep_frequency_shadow
+	}
+	
 	private func volume_envelope_clock() {
-		if volume_envelope_counter != 0 {
-			volume_envelope_counter -= 1
+		if volume_envelope_counter_restart_value == 0 {
+			return
+		}
+		volume_envelope_counter -= 1
+		if volume_envelope_counter == 0 {
+			volume_envelope_counter = volume_envelope_counter_restart_value
 			if volume_envelope_increase {
 				internal_volume += 1
 			} else {
@@ -128,6 +139,7 @@ class Channel {
 			if internal_volume < 0 || internal_volume > 15 {
 				internal_volume = max(min(internal_volume, 15), 0)
 				volume_envelope_counter = 0
+				volume_envelope_counter_restart_value = 0
 			}
 		}
 	}
