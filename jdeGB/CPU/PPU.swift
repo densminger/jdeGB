@@ -311,6 +311,7 @@ class PPU {
 		}
 		let y = ly
 		var bg_color = 0
+		var window_color = 0
 		var spr_color = 0
 		for x in 0..<160 {
 			if bg_window_priority {
@@ -330,6 +331,26 @@ class PPU {
 				let palette_index = ((byte1 & (1 << shift)) >> (shift-1)) | ((byte0 & (1 << shift)) >> shift)
 				bg_color = bg_palette_index(palette_index)
 				screen[x,y] = COLORS[bg_color]
+			}
+			if window_display_enable && ly >= wy {
+				if x >= wx - 7 {
+					let nx = x - (wx - 7)
+					let ny = y - wy
+					let tilei = (ny/8)*32 + nx/8
+					let tile = bus.read(0x9800 + (window_tile_map_display_select * 0x0400) + tilei)
+					let addr: Int
+					if tile > 127 {
+						addr = 0x8800 + ((tile-128)*16) + (2*(ny%8))
+					} else {
+						addr = 0x8000 + (tile_data_select == 0 ? 0x1000 : 0) + (tile*16) + (2*(ny%8))
+					}
+					let byte1 = bus.read(addr+1)
+					let byte0 = bus.read(addr)
+					let shift = 7-(x%8)
+					let palette_index = ((byte1 & (1 << shift)) >> (shift-1)) | ((byte0 & (1 << shift)) >> shift)
+					window_color = bg_palette_index(palette_index)
+					screen[x,y] = COLORS[window_color]
+				}
 			}
 			if sprite_display_enable {
 				for i in scanline_sprite_ids {

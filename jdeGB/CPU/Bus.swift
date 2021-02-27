@@ -379,7 +379,7 @@ class Bus {
 //				print("FF25 \(data)")
 				break
 			case 0xFF26:	// Sound on/off
-//				print("FF26 \(data)")
+				apu.sound_enable = data > 0
 				break
 			case 0xFF30...0xFF3F:	// Wave Pattern RAM
 				break

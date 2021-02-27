@@ -23,6 +23,7 @@ class APU {
 
 	private var audioEngine: AVAudioEngine
 	private lazy var sourceNode = AVAudioSourceNode { _, _, frameCount, audioBufferList in
+		if !self.sound_enable { return noErr }
 		let ablPointer = UnsafeMutableAudioBufferListPointer(audioBufferList)
 
 		for frame in 0..<Int(frameCount) {
@@ -44,6 +45,8 @@ class APU {
 	
 	private let sampleRate: Double
 	private let deltaTime: Float
+	
+	public var sound_enable = true
 
 	init() {
 		audioEngine = AVAudioEngine()
