@@ -25,13 +25,13 @@ class APU {
 		let ablPointer = UnsafeMutableAudioBufferListPointer(audioBufferList)
 
 		for frame in 0..<Int(frameCount) {
-			var sampleVal: Float = 0
 			Oscillator.duty = self.channel1.duty
-			sampleVal = self.channel1.signal(Float(self.channel1.frequency), self.channel1.time)*self.channel1.volume
-			Oscillator.duty = self.channel2.duty
-			sampleVal += self.channel2.signal(Float(self.channel2.frequency), self.channel2.time)*self.channel2.volume
+			var sampleVal = self.channel1.signal(Float(self.channel1.frequency), self.channel1.time)*Float(self.channel1.volume)/15.0
 			self.channel1.time += self.deltaTime
 			self.channel1.time = fmod(self.channel1.time, self.channel1.period)
+
+			Oscillator.duty = self.channel2.duty
+			sampleVal += self.channel2.signal(Float(self.channel2.frequency), self.channel2.time)*Float(self.channel2.volume)/15.0
 			self.channel2.time += self.deltaTime
 			self.channel2.time = fmod(self.channel2.time, self.channel2.period)
 

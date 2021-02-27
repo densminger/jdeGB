@@ -6,19 +6,22 @@
 //
 
 class Channel {
-	public var timer = 0
-	public var period: Float = 0
+	public var time: Float = 0
+	public var period: Float = 1
 	public var frequency = 440 {
+		willSet {
+			old_frequency = frequency
+		}
 		didSet {
 			if frequency == 0 { frequency = 1 }
-			period = Float(1048576*4) / Float(frequency)
+			period = 1 / Float(frequency)
 		}
 	}
+	public var old_frequency = 440
 	public var freq_lohi = 0
 	private var sequencer_timer = 2048
 	private var sequencer_clock = 0
 
-	public var time: Float = 0
 	public let sample_rate: Int
 
 	public var length_counter = 0
@@ -41,18 +44,10 @@ class Channel {
 	
 	public var duty = 0.5
 	
-	private var internal_volume = 0
-	public var volume: Float {
-		get {
-			return Float(internal_volume)/15.0
-		}
-		set(v) {
-			internal_volume = Int(15.0 * v)
-		}
-	}
-	public var volume_restart_value: Float = 0
+	public var volume = 0
+	public var volume_restart_value = 0
 	
-	public var channel_enable = false
+	public var channel_enable = true
 	
 	public let signal: Signal
 	
@@ -60,12 +55,6 @@ class Channel {
 		if !channel_enable {
 			return
 		}
-		if timer == 0 {
-			timer = Int(period)
-			output_clock()
-		}
-		timer -= 1
-		
 		sequencer_timer -= 1
 		if sequencer_timer == 0 {
 			sequencer_timer = 2048
@@ -91,14 +80,20 @@ class Channel {
 		if length_enable {
 			length_counter -= 1
 			if length_counter <= 0 {
-				internal_volume = 0
+				volume = 0
 				channel_enable = false
 				length_enable = false
 			}
 		}
 	}
 	
+//	var add = 1
 	private func sweep_clock() {
+//		duty = 0.5
+//		volume = 1
+//		frequency += add
+//		if frequency > 880 || frequency < 220 { add *= -1 }
+//		return
 		if !sweep_enable {
 			return
 		}
@@ -132,12 +127,12 @@ class Channel {
 		if volume_envelope_counter == 0 {
 			volume_envelope_counter = volume_envelope_counter_restart_value
 			if volume_envelope_increase {
-				internal_volume += 1
+				volume += 1
 			} else {
-				internal_volume -= 1
+				volume -= 1
 			}
-			if internal_volume < 0 || internal_volume > 15 {
-				internal_volume = max(min(internal_volume, 15), 0)
+			if volume < 0 || volume > 15 {
+				volume = max(min(volume, 15), 0)
 				volume_envelope_counter = 0
 				volume_envelope_counter_restart_value = 0
 			}

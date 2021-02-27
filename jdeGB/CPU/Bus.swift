@@ -283,13 +283,13 @@ class Bus {
 				apu.channel1.length_counter = 64 - sound_length_bits
 			case 0xFF12:	// Channel 1 Volume Envelope
 				let volume = (data & 0b1111_0000) >> 4
-				apu.channel1.volume = Float(volume)/15.0
-				apu.channel1.volume_restart_value = apu.channel1.volume
+				apu.channel1.volume = volume
+ 				apu.channel1.volume_restart_value = apu.channel1.volume
 				apu.channel1.volume_envelope_counter = (data & 0b0000_0111)
 				apu.channel1.volume_envelope_counter_restart_value = apu.channel1.volume_envelope_counter
 				apu.channel1.volume_envelope_increase = data & 0b0000_1000 > 0
 			case 0xFF13:	// Channel 1 Frequency lo
-				apu.channel1.freq_lohi = (apu.channel1.freq_lohi & 0xFF00) + (data & 0xfc)	// i only take the upper 6 bits of the frequency data because otherwise small, quick fluctuations of a couple of Hz will cause the sound to "pop"
+				apu.channel1.freq_lohi = (apu.channel1.freq_lohi & 0xFF00) + data
 			case 0xFF14:	// Channel 1 Frequency hi
 				apu.channel1.freq_lohi = (apu.channel1.freq_lohi & 0x00FF) + ((data & 7) << 8)
 				apu.channel1.frequency = 131072/(2048-apu.channel1.freq_lohi)
@@ -300,7 +300,7 @@ class Bus {
 						apu.channel1.length_counter = 64
 					}
 					apu.channel1.volume_envelope_counter = apu.channel1.volume_envelope_counter_restart_value
-					//apu.channel1.volume = apu.channel1.volume_restart_value
+					apu.channel1.volume = apu.channel1.volume_restart_value
 					//print("set volume (2) to \(apu.channel1.volume)")
 //					apu.channel1.sweep_trigger()
 				}
@@ -321,13 +321,13 @@ class Bus {
 				apu.channel2.length_counter = 64 - sound_length_bits
 			case 0xFF17:	// Channel 2 Volume Envelope
 				let volume = (data & 0b1111_0000) >> 4
-				apu.channel2.volume = Float(volume)/15.0
+				apu.channel2.volume = volume
 				apu.channel2.volume_restart_value = apu.channel2.volume
 				apu.channel2.volume_envelope_counter = (data & 0b0000_0111)
 				apu.channel2.volume_envelope_counter_restart_value = apu.channel2.volume_envelope_counter
 				apu.channel2.volume_envelope_increase = data & 0b0000_1000 > 0
 			case 0xFF18:	// Channel 2 Frequency lo
-				apu.channel2.freq_lohi = (apu.channel2.freq_lohi & 0xFF00) + (data & 0xfc)	// i only take the upper 6 bits of the frequency data because otherwise small, quick fluctuations of a couple of Hz will cause the sound to "pop"
+				apu.channel2.freq_lohi = (apu.channel2.freq_lohi & 0xFF00) + data
 			case 0xFF19:	// Channel 2 Frequency hi
 				apu.channel2.freq_lohi = (apu.channel2.freq_lohi & 0x00FF) + ((data & 7) << 8)
 				apu.channel2.frequency = 131072/(2048-apu.channel2.freq_lohi)
@@ -338,7 +338,7 @@ class Bus {
 						apu.channel2.length_counter = 64
 					}
 					apu.channel2.volume_envelope_counter = apu.channel2.volume_envelope_counter_restart_value
-//					apu.channel2.volume = apu.channel2.volume_restart_value
+					apu.channel2.volume = apu.channel2.volume_restart_value
 //					apu.channel2.sweep_trigger()
 				}
 			case 0xFF1A:	// Channel 3 Sound on/off

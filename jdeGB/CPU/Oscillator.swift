@@ -47,12 +47,33 @@ struct Oscillator {
         return Oscillator.amplitude * ((Float(currentTime) / period) * 2 - 1.0)
     }
     
-    static let square: Signal = { frequency, time in
-        let period = 1.0 / Double(frequency)
-        let currentTime = fmod(Double(time), period)
-		return ((currentTime / period) < Oscillator.duty) ? Oscillator.amplitude : -1.0 * Oscillator.amplitude
+    static let square_sin: Signal = { frequency, time in
+		let harmonics = 20
+		var a: Float = 0
+		var b: Float = 0
+		let p: Float = Float(duty) * 2.0 * 3.14159265358979;
+		
+		func approxsin(_ t: Float) -> Float {
+			var j = t * 0.15915
+			j = j - j.rounded(.down)
+			return 20.785 * j * (j-0.5) * (j-1.0)
+		}
+		
+		for n in 1..<harmonics {
+			let c = Float(n) * frequency * 2.0 * 3.14159265358979 * time
+			a += -approxsin(c) / Float(n)
+			b += -approxsin(c - p * Float(n)) / Float(n)
+		}
+		
+		return Float((2.0 / 3.14159265358979) * (a - b))
 	}
     
+	static let square: Signal = { frequency, time in
+		let period = 1.0 / Double(frequency)
+		let currentTime = fmod(Double(time), period)
+		return ((currentTime / period) < 0.5) ? Oscillator.amplitude : -1.0 * Oscillator.amplitude
+	}
+	
     static let whiteNoise: Signal = { frequency, time in
         return Oscillator.amplitude * Float.random(in: -1...1)
     }

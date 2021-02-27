@@ -52,7 +52,7 @@
       </BuildableProductRunnable>
       <EnvironmentVariables>
          <EnvironmentVariable
-            key = "file"
+            key = "file3"
             value = "/Users/david/Downloads/Double Dragon (U) [!].gb"
             isEnabled = "YES">
          </EnvironmentVariable>
@@ -62,7 +62,7 @@
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
-            key = "file1"
+            key = "file"
             value = "/Users/david/Downloads/tetris.gb"
             isEnabled = "YES">
          </EnvironmentVariable>
