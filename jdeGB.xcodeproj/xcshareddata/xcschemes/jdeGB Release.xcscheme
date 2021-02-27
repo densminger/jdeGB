@@ -52,18 +52,23 @@
       </BuildableProductRunnable>
       <EnvironmentVariables>
          <EnvironmentVariable
-            key = "file3"
-            value = "/Users/david/Downloads/Double Dragon (U) [!].gb"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-         <EnvironmentVariable
-            key = "file2"
-            value = "/Users/david/Downloads/2ND_GB/2ND - FINISHED.gb"
+            key = "file1"
+            value = "/Users/david/Downloads/tetris.gb"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "file"
-            value = "/Users/david/Downloads/tetris.gb"
+            value = "/Users/david/Downloads/sml.gb"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "file1"
+            value = "/Users/david/Downloads/Double Dragon (U) [!].gb"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "file1"
+            value = "/Users/david/Downloads/2ND_GB/2ND - FINISHED.gb"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

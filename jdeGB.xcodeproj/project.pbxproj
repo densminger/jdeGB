@@ -7,10 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		637AD40F25E9D0CE009B4E4D /* NoiseChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 637AD40E25E9D0CE009B4E4D /* NoiseChannel.swift */; };
+		637AD41425EAE751009B4E4D /* Channel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 637AD41325EAE751009B4E4D /* Channel.swift */; };
 		638DF7AB25E4527A00BBE3B6 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638DF7AA25E4527A00BBE3B6 /* GameView.swift */; };
 		638DF80025E74BB600BBE3B6 /* APU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638DF7FF25E74BB600BBE3B6 /* APU.swift */; };
-		638DF80625E74BEA00BBE3B6 /* Oscillator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638DF80425E74BEA00BBE3B6 /* Oscillator.swift */; };
-		638DF81125E7541300BBE3B6 /* Channel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638DF81025E7541300BBE3B6 /* Channel.swift */; };
+		638DF81125E7541300BBE3B6 /* SquareChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638DF81025E7541300BBE3B6 /* SquareChannel.swift */; };
 		63E0311A25D72BDA00540E07 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0311925D72BDA00540E07 /* AppDelegate.swift */; };
 		63E0311C25D72BDD00540E07 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 63E0311B25D72BDD00540E07 /* Assets.xcassets */; };
 		63E0311F25D72BDD00540E07 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63E0311D25D72BDD00540E07 /* MainMenu.xib */; };
@@ -49,10 +50,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		637AD40E25E9D0CE009B4E4D /* NoiseChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoiseChannel.swift; sourceTree = "<group>"; };
+		637AD41325EAE751009B4E4D /* Channel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Channel.swift; sourceTree = "<group>"; };
 		638DF7AA25E4527A00BBE3B6 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		638DF7FF25E74BB600BBE3B6 /* APU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APU.swift; sourceTree = "<group>"; };
-		638DF80425E74BEA00BBE3B6 /* Oscillator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Oscillator.swift; sourceTree = "<group>"; };
-		638DF81025E7541300BBE3B6 /* Channel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Channel.swift; sourceTree = "<group>"; };
+		638DF81025E7541300BBE3B6 /* SquareChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquareChannel.swift; sourceTree = "<group>"; };
 		63E0311625D72BDA00540E07 /* jdeGB.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = jdeGB.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63E0311925D72BDA00540E07 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		63E0311B25D72BDD00540E07 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -161,7 +163,6 @@
 		63E0314625D72BF900540E07 /* CPU */ = {
 			isa = PBXGroup;
 			children = (
-				638DF80425E74BEA00BBE3B6 /* Oscillator.swift */,
 				63E0319C25DC2D0400540E07 /* MBCs */,
 				63E0314725D72C3700540E07 /* LR35902.swift */,
 				63E0317425D87A7200540E07 /* LR35902+CB.swift */,
@@ -171,7 +172,9 @@
 				63E0318925DAFFF500540E07 /* Cartridge.swift */,
 				63E0318E25DB035600540E07 /* PPU.swift */,
 				638DF7FF25E74BB600BBE3B6 /* APU.swift */,
-				638DF81025E7541300BBE3B6 /* Channel.swift */,
+				638DF81025E7541300BBE3B6 /* SquareChannel.swift */,
+				637AD40E25E9D0CE009B4E4D /* NoiseChannel.swift */,
+				637AD41325EAE751009B4E4D /* Channel.swift */,
 			);
 			path = CPU;
 			sourceTree = "<group>";
@@ -327,16 +330,17 @@
 			files = (
 				63E031A325DC2D5900540E07 /* MBC0.swift in Sources */,
 				63E0318225D8F7FE00540E07 /* Bus.swift in Sources */,
+				637AD41425EAE751009B4E4D /* Channel.swift in Sources */,
 				63E031A825DC2D8300540E07 /* MBC.swift in Sources */,
 				63E0319825DB7BB000540E07 /* Sprite.swift in Sources */,
-				638DF81125E7541300BBE3B6 /* Channel.swift in Sources */,
+				638DF81125E7541300BBE3B6 /* SquareChannel.swift in Sources */,
 				638DF80025E74BB600BBE3B6 /* APU.swift in Sources */,
 				63E031AD25DC56A400540E07 /* LR35902+Disassemble.swift in Sources */,
 				63E0318F25DB035600540E07 /* PPU.swift in Sources */,
-				638DF80625E74BEA00BBE3B6 /* Oscillator.swift in Sources */,
 				638DF7AB25E4527A00BBE3B6 /* GameView.swift in Sources */,
 				63E0311A25D72BDA00540E07 /* AppDelegate.swift in Sources */,
 				63E0319E25DC2D4600540E07 /* MBC1.swift in Sources */,
+				637AD40F25E9D0CE009B4E4D /* NoiseChannel.swift in Sources */,
 				63E0319725DB7BB000540E07 /* GameEngine.swift in Sources */,
 				63E0314825D72C3700540E07 /* LR35902.swift in Sources */,
 				63E0317525D87A7200540E07 /* LR35902+CB.swift in Sources */,

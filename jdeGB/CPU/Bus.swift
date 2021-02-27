@@ -303,6 +303,8 @@ class Bus {
 					apu.channel1.volume = apu.channel1.volume_restart_value
 					//print("set volume (2) to \(apu.channel1.volume)")
 //					apu.channel1.sweep_trigger()
+				} else {
+					apu.channel1.channel_enable = false
 				}
 			case 0xFF16:	// Channel 2 Sound Length/Wave pattern duty
 				switch (data & 0b1100_0000) >> 6 {
@@ -340,6 +342,8 @@ class Bus {
 					apu.channel2.volume_envelope_counter = apu.channel2.volume_envelope_counter_restart_value
 					apu.channel2.volume = apu.channel2.volume_restart_value
 //					apu.channel2.sweep_trigger()
+				} else {
+					apu.channel2.channel_enable = false
 				}
 			case 0xFF1A:	// Channel 3 Sound on/off
 				break
@@ -352,11 +356,20 @@ class Bus {
 			case 0xFF1E:	// Channel 3 Frequency hi
 				break
 			case 0xFF20:	// Channel 4 Sound Length
-				break
+				let sound_length_bits = data & 0b0011_1111
+				apu.channel4.length_counter = 64 - sound_length_bits
 			case 0xFF21:	// Channel 4 Volume Envelope
-				break
+				let volume = (data & 0b1111_0000) >> 4
+				print("setting volume to \(volume)")
+				apu.channel4.volume = volume
+				apu.channel4.volume_restart_value = apu.channel4.volume
+				apu.channel4.volume_envelope_counter = (data & 0b0000_0111)
+				apu.channel4.volume_envelope_counter_restart_value = apu.channel4.volume_envelope_counter
+				apu.channel4.volume_envelope_increase = data & 0b0000_1000 > 0
 			case 0xFF22:	// Channel 4 Polynomial Counter
-				break
+				apu.channel4.shift_clock_frequency = (data & 0b1111_0000) >> 4
+				apu.channel4.lsfr_short = (data & 0b0000_1000) > 0
+				apu.channel4.dividing_ratio = (data & 0b0000_0111)
 			case 0xFF23:	// Channel 4 Counter/Consecutive; Initial
 				break
 			case 0xFF24:	// Channel control / ON-OFF / Volume

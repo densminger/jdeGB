@@ -8,8 +8,9 @@
 import AVFoundation
 
 class APU {
-	public let channel1 = Channel(signal: Oscillator.square)
-	public let channel2 = Channel(signal: Oscillator.square)
+	public let channel1 = SquareChannel()
+	public let channel2 = SquareChannel()
+	public let channel4 = NoiseChannel()
 	
 	public var volume: Float {
 		set {
@@ -25,15 +26,12 @@ class APU {
 		let ablPointer = UnsafeMutableAudioBufferListPointer(audioBufferList)
 
 		for frame in 0..<Int(frameCount) {
-			Oscillator.duty = self.channel1.duty
-			var sampleVal = self.channel1.signal(Float(self.channel1.frequency), self.channel1.time)*Float(self.channel1.volume)/15.0
-			self.channel1.time += self.deltaTime
-			self.channel1.time = fmod(self.channel1.time, self.channel1.period)
-
-			Oscillator.duty = self.channel2.duty
-			sampleVal += self.channel2.signal(Float(self.channel2.frequency), self.channel2.time)*Float(self.channel2.volume)/15.0
-			self.channel2.time += self.deltaTime
-			self.channel2.time = fmod(self.channel2.time, self.channel2.period)
+			var sampleVal = self.channel1.sample()
+			sampleVal += self.channel2.sample()
+			sampleVal += self.channel4.sample()
+			self.channel1.incrementTime(delta: self.deltaTime)
+			self.channel2.incrementTime(delta: self.deltaTime)
+			self.channel4.incrementTime(delta: self.deltaTime)
 
 			for buffer in ablPointer {
 				let buf: UnsafeMutableBufferPointer<Float> = UnsafeMutableBufferPointer(buffer)
@@ -81,5 +79,6 @@ class APU {
 	public func clock() {
 		channel1.clock()
 		channel2.clock()
+		channel4.clock()
 	}
 }
