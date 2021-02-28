@@ -49,7 +49,7 @@ class NoiseChannel {
 			clock_frequency = clock_frequency_restart_value
 			shift_lsfr()
 		}
-		return (lsfr & 0b0001) > 0 ? Float(-volume)/15.0 : Float(volume)/15.0
+		return (lsfr & 0b0001) > 0 ? 0 : Float(volume)
 	}
 	
 	func incrementTime(delta: Float) {

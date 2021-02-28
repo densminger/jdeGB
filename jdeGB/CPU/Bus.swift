@@ -352,23 +352,24 @@ class Bus {
 			case 0xFF1C:	// Channel 3 Select Output Level
 				switch (data & 0b0110_0000) >> 5 {
 				case 0b00:
-					apu.channel3.volume = 0
+					apu.channel3.volume_shift = 4
 				case 0b01:
-					apu.channel3.volume = 15
+					apu.channel3.volume_shift = 0
 				case 0b10:
-					apu.channel3.volume = 7
+					apu.channel3.volume_shift = 1
 				case 0b11:
-					apu.channel3.volume = 3
+					apu.channel3.volume_shift = 2
 				default:
 					break
 				}
-				apu.channel3.volume_restart_value = apu.channel3.volume
+				apu.channel3.volume_restart_value = apu.channel3.volume_shift
 			case 0xFF1D:	// Channel 3 Frequency lo
 				apu.channel3.freq_lohi = (apu.channel3.freq_lohi & 0x0700) + data
 			case 0xFF1E:	// Channel 3 Frequency hi
-				apu.channel3.freq_lohi = (apu.channel3.freq_lohi & 0x00FF) + ((data & 7) << 8)
+				apu.channel3.freq_lohi = (apu.channel3.freq_lohi & 0x00FF) + ((data & 0x07) << 8)
 				apu.channel3.frequency = apu.channel3.freq_lohi
-//				apu.channel3.frequency = 65536/(2048-apu.channel3.freq_lohi)
+//				apu.channel3.frequency = 131072/(2048-apu.channel3.freq_lohi)
+//				apu.channel3.frequency = 65536/(2048 - apu.channel3.freq_lohi)
 //				apu.channel3.frequency = (2048-apu.channel3.freq_lohi)*2
 				apu.channel3.length_enable = data & 0b0100_0000 > 0
 				if data & 0b1000_0000 > 0 {
@@ -376,7 +377,7 @@ class Bus {
 					if apu.channel3.length_counter == 0 {
 						apu.channel3.length_counter = 256
 					}
-					apu.channel3.volume = apu.channel3.volume_restart_value
+					apu.channel3.volume_shift = apu.channel3.volume_restart_value
 				} else {
 					apu.channel3.channel_enable = false
 				}

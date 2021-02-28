@@ -28,10 +28,14 @@ class APU {
 		let ablPointer = UnsafeMutableAudioBufferListPointer(audioBufferList)
 
 		for frame in 0..<Int(frameCount) {
+			let clocks = Int(self.deltaTime * 1024 * 1024 * 4)
+//			print("clocks = \(clocks)")
+			self.channel3.clock(clocks)
+
 			var sampleVal: Float = 0
 			sampleVal += self.channel1.sample()
 			sampleVal += self.channel2.sample()
-			//sampleVal += self.channel3.sample()
+			sampleVal += self.channel3.sample()
 			sampleVal += self.channel4.sample()
 			self.channel1.incrementTime(delta: self.deltaTime)
 			self.channel2.incrementTime(delta: self.deltaTime)
@@ -86,7 +90,7 @@ class APU {
 	public func clock() {
 		channel1.clock()
 		channel2.clock()
-		channel3.clock()
+		//channel3.clock()
 		channel4.clock()
 	}
 }

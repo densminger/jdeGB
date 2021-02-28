@@ -140,7 +140,7 @@ class SquareChannel {
 	}
 	
 	func sample() -> Float {
-		return (Double(time / period) < duty) ? Float(volume)/15.0 : Float(-volume)/15.0
+		return (Double(time / period) < duty) ? Float(volume) : 0
 	}
 	
 	init(sample_rate: Int = 44100) {

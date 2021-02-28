@@ -201,6 +201,7 @@ class GameEngine: SKScene {
 //			gb.apu.channel3.i -= 1
 //			if gb.apu.channel3.i < 1 { gb.apu.channel3.i = 1 }
 //			print("i = \(gb.apu.channel3.i)")
+			gb.apu.channel3.print_vars()
 		} else if keyPressed == 30 {	// ]
 			emulator_speed = 1
 			print("emulator_speed = \(emulator_speed)")
