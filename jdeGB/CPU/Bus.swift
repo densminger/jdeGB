@@ -346,21 +346,45 @@ class Bus {
 					apu.channel2.channel_enable = false
 				}
 			case 0xFF1A:	// Channel 3 Sound on/off
-				break
+				apu.channel3.channel_enable = (data & 0x80) > 0
 			case 0xFF1B:	// Channel 3 Sound Length
-				break
+				apu.channel3.length_counter = 256 - data
 			case 0xFF1C:	// Channel 3 Select Output Level
-				break
+				switch (data & 0b0110_0000) >> 5 {
+				case 0b00:
+					apu.channel3.volume = 0
+				case 0b01:
+					apu.channel3.volume = 15
+				case 0b10:
+					apu.channel3.volume = 7
+				case 0b11:
+					apu.channel3.volume = 3
+				default:
+					break
+				}
+				apu.channel3.volume_restart_value = apu.channel3.volume
 			case 0xFF1D:	// Channel 3 Frequency lo
-				break
+				apu.channel3.freq_lohi = (apu.channel3.freq_lohi & 0x0700) + data
 			case 0xFF1E:	// Channel 3 Frequency hi
-				break
+				apu.channel3.freq_lohi = (apu.channel3.freq_lohi & 0x00FF) + ((data & 7) << 8)
+				apu.channel3.frequency = apu.channel3.freq_lohi
+//				apu.channel3.frequency = 65536/(2048-apu.channel3.freq_lohi)
+//				apu.channel3.frequency = (2048-apu.channel3.freq_lohi)*2
+				apu.channel3.length_enable = data & 0b0100_0000 > 0
+				if data & 0b1000_0000 > 0 {
+					apu.channel3.channel_enable = true
+					if apu.channel3.length_counter == 0 {
+						apu.channel3.length_counter = 256
+					}
+					apu.channel3.volume = apu.channel3.volume_restart_value
+				} else {
+					apu.channel3.channel_enable = false
+				}
 			case 0xFF20:	// Channel 4 Sound Length
 				let sound_length_bits = data & 0b0011_1111
 				apu.channel4.length_counter = 64 - sound_length_bits
 			case 0xFF21:	// Channel 4 Volume Envelope
 				let volume = (data & 0b1111_0000) >> 4
-				print("setting volume to \(volume)")
 				apu.channel4.volume = volume
 				apu.channel4.volume_restart_value = apu.channel4.volume
 				apu.channel4.volume_envelope_counter = (data & 0b0000_0111)
@@ -379,10 +403,10 @@ class Bus {
 //				print("FF25 \(data)")
 				break
 			case 0xFF26:	// Sound on/off
-				apu.sound_enable = data > 0
-				break
+				apu.sound_enable = (data & 0b1000_0000) > 0
 			case 0xFF30...0xFF3F:	// Wave Pattern RAM
-				break
+				let offset = addr - 0xFF30
+				apu.channel3.pattern[offset] = data
 			case 0xFF40:
 				ppu.lcdc = data
 			case 0xFF41:	// LCDC Status

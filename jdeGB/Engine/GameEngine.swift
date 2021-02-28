@@ -17,11 +17,11 @@ class GameEngine: SKScene {
 	private let screenFrame: Sprite
 	private let tileSets = Array(repeating: Sprite(width: 128, height: 64), count: 3)
 	
-	var show_cpu = true
-	var show_code = true
+	var show_cpu = false
+	var show_code = false
 	var show_tilesets = true
 	
-	var emulation_run = false
+	var emulation_run = true
 	
 	let frame_duration = 1.0/60.0
 	let clock_tick = 1.0/(1024.0*1024.0)
@@ -190,12 +190,17 @@ class GameEngine: SKScene {
 				emulator_speed = 1
 			}
 			print("emulator_speed = \(emulator_speed)")
+//			gb.apu.channel3.i += 1
+//			print("i = \(gb.apu.channel3.i)")
 		} else if keyPressed == 27 {	// -
 			emulator_speed -= 0.0005
 			if emulator_speed < 0 {
 				emulator_speed = 0
 			}
 			print("emulator_speed = \(emulator_speed)")
+//			gb.apu.channel3.i -= 1
+//			if gb.apu.channel3.i < 1 { gb.apu.channel3.i = 1 }
+//			print("i = \(gb.apu.channel3.i)")
 		} else if keyPressed == 30 {	// ]
 			emulator_speed = 1
 			print("emulator_speed = \(emulator_speed)")

@@ -10,6 +10,7 @@ import AVFoundation
 class APU {
 	public let channel1 = SquareChannel()
 	public let channel2 = SquareChannel()
+	public let channel3 = WaveChannel()
 	public let channel4 = NoiseChannel()
 	
 	public var volume: Float {
@@ -27,11 +28,14 @@ class APU {
 		let ablPointer = UnsafeMutableAudioBufferListPointer(audioBufferList)
 
 		for frame in 0..<Int(frameCount) {
-			var sampleVal = self.channel1.sample()
+			var sampleVal: Float = 0
+			sampleVal += self.channel1.sample()
 			sampleVal += self.channel2.sample()
+			//sampleVal += self.channel3.sample()
 			sampleVal += self.channel4.sample()
 			self.channel1.incrementTime(delta: self.deltaTime)
 			self.channel2.incrementTime(delta: self.deltaTime)
+			self.channel3.incrementTime(delta: self.deltaTime)
 			self.channel4.incrementTime(delta: self.deltaTime)
 
 			for buffer in ablPointer {
@@ -82,6 +86,7 @@ class APU {
 	public func clock() {
 		channel1.clock()
 		channel2.clock()
+		channel3.clock()
 		channel4.clock()
 	}
 }

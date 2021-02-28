@@ -52,8 +52,13 @@
       </BuildableProductRunnable>
       <EnvironmentVariables>
          <EnvironmentVariable
-            key = "file1"
+            key = "file"
             value = "/Users/david/Downloads/tetris.gb"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "file1"
+            value = "/Users/david/Downloads/Castlevania Adventure, The (E) [!].gb"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
@@ -62,13 +67,23 @@
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
-            key = "file"
+            key = "file1"
             value = "/Users/david/Downloads/Double Dragon (U) [!].gb"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "file1"
             value = "/Users/david/Downloads/2ND_GB/2ND - FINISHED.gb"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "file1"
+            value = "/Users/david/Downloads/gunsriders.gb"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "file1"
+            value = "/Users/david/Downloads/drmario.gb"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

@@ -5,7 +5,7 @@
 //  Created by David Ensminger on 2/26/21.
 //
 
-class NoiseChannel: Channel {
+class NoiseChannel {
 	var lsfr: Int
 	var clock_frequency = 0
 	var clock_frequency_restart_value = 0

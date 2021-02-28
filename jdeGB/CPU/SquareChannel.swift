@@ -7,19 +7,15 @@
 
 import AVFoundation
 
-class SquareChannel: Channel {
+class SquareChannel {
 	private var time: Float = 0
 	private var period: Float = 0
 	public var frequency = 440 {
-		willSet {
-			old_frequency = frequency
-		}
 		didSet {
 			if frequency == 0 { frequency = 1 }
 			period = 1 / Float(frequency)
 		}
 	}
-	public var old_frequency = 440
 	public var freq_lohi = 0
 	private var sequencer_timer = 2048
 	private var sequencer_clock = 0
@@ -103,7 +99,7 @@ class SquareChannel: Channel {
 		}
 		sweep_timer -= 1
 		if sweep_timer <= 0 {
-			sweep_trigger()
+			//sweep_trigger()
 		}
 	}
 	
@@ -144,7 +140,7 @@ class SquareChannel: Channel {
 	}
 	
 	func sample() -> Float {
-		return ((time / period) < 0.5) ? Float(volume)/15.0 : Float(-volume)/15.0
+		return (Double(time / period) < duty) ? Float(volume)/15.0 : Float(-volume)/15.0
 	}
 	
 	init(sample_rate: Int = 44100) {
