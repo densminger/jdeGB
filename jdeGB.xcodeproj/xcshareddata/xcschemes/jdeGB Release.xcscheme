@@ -57,13 +57,43 @@
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
+            key = "file"
+            value = "/Users/david/Downloads/Legend of Zelda, The - Link&apos;s Awakening DX (U) (V1.2) [C][!].gbc"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "file1"
+            value = "/Users/david/Downloads/Super Mario Land 4 (J) [!].gb"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "file1"
+            value = "/Users/david/Downloads/dmg-acid2.gb"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "file1"
+            value = "/Users/david/Downloads/instr_timing.gb"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
             key = "file1"
             value = "/Users/david/Downloads/Castlevania Adventure, The (E) [!].gb"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "file1"
-            value = "/Users/david/Downloads/sml.gb"
+            value = "/Users/david/Downloads/sml2.gb"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "file1"
+            value = "/Users/david/Downloads/Pokemon Green (U) [p1][!].gb"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "file1"
+            value = "/Users/david/Downloads/Legend of Zelda, The - Link&apos;s Awakening (U) (V1.2) [!].gb"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
@@ -78,11 +108,11 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "file1"
-            value = "/Users/david/Downloads/gunsriders.gb"
+            value = "/Users/david/Downloads/Tennis (JUE) [!].gb"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
-            key = "file"
+            key = "file1"
             value = "/Users/david/Downloads/drmario.gb"
             isEnabled = "YES">
          </EnvironmentVariable>

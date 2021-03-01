@@ -201,7 +201,7 @@ extension LR35902 {
 				if flag_h || result & 0x0F > 0x09 {
 					result += 0x06
 				}
-				if flag_c || result > 0x99 {
+				if flag_c || result > 0x9F {
 					result += 0x60
 				}
 			} else {
@@ -1320,7 +1320,7 @@ extension LR35902 {
 			cycles = 1
 		case 0xF5:	// PUSH AF
 			sp = (sp - 2) & 0xFFFF
-			write16(sp, af)
+			write16(sp, af & 0xFFF0)
 			cycles = 4
 		case 0xF6:	// OR d8
 			a = (a | read8(pc)) & 0xFF

@@ -10,7 +10,7 @@ class PPU {
 	//  Each 32-bit int is in the order: AABBGGRR (not RRGGBB like you might suspect)
 	// Alpha is always 100% so it's set to FF
 	let COLORS: [UInt32] = [0xFF0FBC9B, 0xFF0FAC8B, 0xFF306230, 0xFF0F380F]
-	
+
 	var vram = Array(repeating: 0, count: 0x2000)
 	var oam = Array(repeating: 0, count: 160)
 	var bus: Bus!
@@ -194,7 +194,8 @@ class PPU {
 
 	var ly = 0 {
 		didSet {
-			if lyc_ly_coincidence_interrupt && ly == lyc {
+			coincidence_flag = (ly == lyc)
+			if ly == lyc && lyc_ly_coincidence_interrupt {
 				// request lcdstat interrupt
 				bus.write(0xFF0F, bus.read(0xFF0F) | 0b0000_0010)
 			}
@@ -274,9 +275,17 @@ class PPU {
 	}
 	
 	func do_mode_0() {
+		mode = 0
+		if mode0_hblank_interrupt {
+			bus.write(0xFF0F, bus.read(0xFF0F) | 0b0000_0010)
+		}
 	}
 	
 	func do_mode_1() {
+		mode = 1
+		if mode1_vblank_interrupt {
+			bus.write(0xFF0F, bus.read(0xFF0F) | 0b0000_0010)
+		}
 //		for y in 0..<32 {
 //			for x in 0..<32 {
 //				print("\(String(format: "%02i", bus.read(0x9800 + (bg_tile_map_display_select * 0x0400) + y*32 + x))) ", terminator: "")
@@ -287,6 +296,10 @@ class PPU {
 	}
 	
 	func do_mode_2() {
+		mode = 2
+		if mode2_oam_interrupt {
+			bus.write(0xFF0F, bus.read(0xFF0F) | 0b0000_0010)
+		}
 		// get a list of the (up to) 10 sprites that will be on this line
 		scanline_sprite_ids.removeAll()
 		for i in 0..<40 {
@@ -306,6 +319,7 @@ class PPU {
 	}
 	
 	func do_mode_3() {
+		mode = 3
 		if !display_rendering_enabled {
 			return
 		}
@@ -332,26 +346,6 @@ class PPU {
 				bg_color = bg_palette_index(palette_index)
 				screen[x,y] = COLORS[bg_color]
 			}
-			if window_display_enable && ly >= wy {
-				if x >= wx - 7 {
-					let nx = x - (wx - 7)
-					let ny = y - wy
-					let tilei = (ny/8)*32 + nx/8
-					let tile = bus.read(0x9800 + (window_tile_map_display_select * 0x0400) + tilei)
-					let addr: Int
-					if tile > 127 {
-						addr = 0x8800 + ((tile-128)*16) + (2*(ny%8))
-					} else {
-						addr = 0x8000 + (tile_data_select == 0 ? 0x1000 : 0) + (tile*16) + (2*(ny%8))
-					}
-					let byte1 = bus.read(addr+1)
-					let byte0 = bus.read(addr)
-					let shift = 7-(x%8)
-					let palette_index = ((byte1 & (1 << shift)) >> (shift-1)) | ((byte0 & (1 << shift)) >> shift)
-					window_color = bg_palette_index(palette_index)
-					screen[x,y] = COLORS[window_color]
-				}
-			}
 			if sprite_display_enable {
 				for i in scanline_sprite_ids {
 					let spr_x = get_oam_x(index: i)
@@ -368,8 +362,18 @@ class PPU {
 						}
 						let attr = get_oam_attr(index: i)
 						var sprite_row = y - top
+//						if sprite_row > 7 {
+//							sprite_row = (y - 8) - top
+//						}
 						if attr & 0b0100_0000 > 0 {	// vflip
 							sprite_row = 7 - sprite_row
+							if sprite_large {
+								if y-top < 8 {
+									tile += 1
+								} else {
+									sprite_row += 1
+								}
+							}
 						}
 						let addr = 0x8000 + (tile*16) + 2*(sprite_row % 8)
 						let byte1 = bus.read(addr+1)
@@ -386,6 +390,26 @@ class PPU {
 							break
 						}
 					}
+				}
+			}
+			if window_display_enable && ly >= wy {
+				if x >= wx - 7 {
+					let nx = x - (wx - 7)
+					let ny = y - wy
+					let tilei = (ny/8)*32 + nx/8
+					let tile = bus.read(0x9800 + (window_tile_map_display_select * 0x0400) + tilei)
+					let addr: Int
+					if tile > 127 {
+						addr = 0x8800 + ((tile-128)*16) + (2*(ny%8))
+					} else {
+						addr = 0x8000 + (tile_data_select == 0 ? 0x1000 : 0) + (tile*16) + (2*(ny%8))
+					}
+					let byte1 = bus.read(addr+1)
+					let byte0 = bus.read(addr)
+					let shift = 7-(nx%8)
+					let palette_index = ((byte1 & (1 << shift)) >> (shift-1)) | ((byte0 & (1 << shift)) >> shift)
+					window_color = bg_palette_index(palette_index)
+					screen[x,y] = COLORS[window_color]
 				}
 			}
 		}

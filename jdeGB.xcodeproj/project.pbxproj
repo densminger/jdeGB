@@ -12,6 +12,7 @@
 		638DF7AB25E4527A00BBE3B6 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638DF7AA25E4527A00BBE3B6 /* GameView.swift */; };
 		638DF80025E74BB600BBE3B6 /* APU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638DF7FF25E74BB600BBE3B6 /* APU.swift */; };
 		638DF81125E7541300BBE3B6 /* SquareChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638DF81025E7541300BBE3B6 /* SquareChannel.swift */; };
+		63B5C9FC25EC27D4005D4788 /* MBC5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63B5C9FB25EC27D4005D4788 /* MBC5.swift */; };
 		63E0311A25D72BDA00540E07 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0311925D72BDA00540E07 /* AppDelegate.swift */; };
 		63E0311C25D72BDD00540E07 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 63E0311B25D72BDD00540E07 /* Assets.xcassets */; };
 		63E0311F25D72BDD00540E07 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63E0311D25D72BDD00540E07 /* MainMenu.xib */; };
@@ -55,6 +56,7 @@
 		638DF7AA25E4527A00BBE3B6 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		638DF7FF25E74BB600BBE3B6 /* APU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APU.swift; sourceTree = "<group>"; };
 		638DF81025E7541300BBE3B6 /* SquareChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquareChannel.swift; sourceTree = "<group>"; };
+		63B5C9FB25EC27D4005D4788 /* MBC5.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBC5.swift; sourceTree = "<group>"; };
 		63E0311625D72BDA00540E07 /* jdeGB.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = jdeGB.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63E0311925D72BDA00540E07 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		63E0311B25D72BDD00540E07 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -195,6 +197,7 @@
 				63E0319D25DC2D4600540E07 /* MBC1.swift */,
 				63E031A225DC2D5900540E07 /* MBC0.swift */,
 				63E031A725DC2D8300540E07 /* MBC.swift */,
+				63B5C9FB25EC27D4005D4788 /* MBC5.swift */,
 			);
 			path = MBCs;
 			sourceTree = "<group>";
@@ -329,6 +332,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				63E031A325DC2D5900540E07 /* MBC0.swift in Sources */,
+				63B5C9FC25EC27D4005D4788 /* MBC5.swift in Sources */,
 				63E0318225D8F7FE00540E07 /* Bus.swift in Sources */,
 				63E031A825DC2D8300540E07 /* MBC.swift in Sources */,
 				63E0319825DB7BB000540E07 /* Sprite.swift in Sources */,

@@ -1,11 +1,11 @@
 //
-//  MBC1.swift
+//  MBC5.swift
 //  jdeGB
 //
-//  Created by David Ensminger on 2/16/21.
+//  Created by David Ensminger on 2/28/21.
 //
 
-class MBC1: MBC {
+class MBC5: MBC {
 	override func read_addr(addr: Int) -> Int {
 		var mapped_addr = addr
 		switch addr {
@@ -26,19 +26,17 @@ class MBC1: MBC {
 		switch addr {
 		case 0x0000...0x1FFF:
 			ram_enable = (data == 0x0A)
-		case 0x2000...0x3FFF:
-			rom_bank = (data & 0x1F) & (~banks)
-			if rom_bank == 0 {
-				rom_bank = 1
-			}
+		case 0x2000...0x2FFF:
+			rom_bank = (data & 0xFF)
+		case 0x3000...0x3FFF:
+			rom_bank += (data & 0x01) << 8
 		case 0x4000...0x5FFF:
-			secondary_bank = data & 0x03
-		case 0x6000...0x7FFF:
-			bank_mode = data & 0x01
+			secondary_bank = data & 0x0F
 		case 0xA000...0xBFFF where ram != nil:
-			ram![addr - 0xA000] = data & 0xFF
+			ram![secondary_bank * ram_bank_size + (addr - 0xA000)] = data & 0xFF
 		default:
 			break
 		}
 	}
 }
+

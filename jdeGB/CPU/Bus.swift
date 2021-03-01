@@ -41,6 +41,7 @@ class Bus {
 	var joypad_request = 0x00
 	
 	var serial = 0
+	var serial_transfer_control = 0
 
 	var cart: Cartridge!
 	
@@ -97,7 +98,10 @@ class Bus {
 			case 0xFF01:	// Serial transfer Data
 				data = serial
 			case 0xFF02:	// Serial transfer Control
-				break
+				data = serial_transfer_control
+				if data & 0x80 == 0 {
+					cpu.interrupt_request |= 0x08
+				}
 			case 0xFF04:	// Divider register
 				data = divider_timer & 0xFF
 			case 0xFF05:	// TIMA
@@ -230,6 +234,7 @@ class Bus {
 			case 0xFF02:	// Serial transfer Control
 				// for now, just print to the console
 				// The Blargg Test ROMs print data to the console so this is helpful for now.
+				serial_transfer_control = data
 				if data == 0x81 {
 					let chr = read(0xFF01)
 					if chr == 10 || (chr >= 32 && chr <= 122) {
@@ -241,9 +246,9 @@ class Bus {
 			case 0xFF04:	// Divider register
 				divider_timer = 0
 			case 0xFF05:	// TIMA
-				break
+				tac_timer = data & 0xFF
 			case 0xFF06:	// TMA
-				timer_modulo = data & 0xff
+				timer_modulo = data & 0xFF
 			case 0xFF07:	// TAC
 				tac_timer_enable = (data & 0x04) > 0
 				switch (data & 0x03) {
@@ -396,7 +401,13 @@ class Bus {
 				apu.channel4.lsfr_short = (data & 0b0000_1000) > 0
 				apu.channel4.dividing_ratio = (data & 0b0000_0111)
 			case 0xFF23:	// Channel 4 Counter/Consecutive; Initial
-				break
+				apu.channel4.length_enable = data & 0b0100_0000 > 0
+				if data & 0b1000_0000 > 0 {
+					apu.channel4.channel_enable = true
+					if apu.channel4.length_counter == 0 {
+						apu.channel4.length_counter = 64
+					}
+				}
 			case 0xFF24:	// Channel control / ON-OFF / Volume
 //				print("FF24 \(data)")
 				break

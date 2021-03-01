@@ -16,6 +16,8 @@ class MBC: MBCProtocol {
 	var ram_enable = false
 	var bank_mode = 0
 	var banks = 0
+	var ram: Array<Int>?
+	var ram_bank_size = 0
 
 	func read_addr(addr: Int) -> Int {
 		return addr
@@ -23,5 +25,8 @@ class MBC: MBCProtocol {
 	
 	func write_addr(addr: Int) -> Int {
 		return addr
+	}
+	
+	func write(_ addr: Int, _ data: Int) {
 	}
 }

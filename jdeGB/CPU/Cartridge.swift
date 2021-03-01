@@ -10,7 +10,6 @@ import Foundation
 class Cartridge {
 	var rom: Array<Int>!
 	var mbc: MBC!
-	var ram: Array<Int>?
 
 	init?(from filename: String) {
 		let url = URL(fileURLWithPath: filename)
@@ -26,12 +25,10 @@ class Cartridge {
 		switch Int(data[0x0147]) {
 		case 0x00:
 			mbc = MBC0()
-		case 0x01:
+		case 0x01...0x03:
 			mbc = MBC1()
-		case 0x02:
-			mbc = MBC1()
-		case 0x03:
-			mbc = MBC1()
+		case 0x19...0x1E:
+			mbc = MBC5()
 		default:
 			print("MBC unknown or not supported")
 			return nil
@@ -80,17 +77,28 @@ class Cartridge {
 		// ram size
 		switch (Int(data[0x0149])) {
 		case 0x00:
-			ram = nil
+			mbc.ram = nil
+			mbc.ram_enable = false
 		case 0x01:
-			ram = Array(repeating: 0, count: 2*1024)
+			mbc.ram = Array(repeating: 0, count: 2*1024)
+			mbc.ram_bank_size = 2*1024
+			mbc.ram_enable = true
 		case 0x02:
-			ram = Array(repeating: 0, count: 8*1024)
+			mbc.ram = Array(repeating: 0, count: 8*1024)
+			mbc.ram_bank_size = 8*1024
+			mbc.ram_enable = true
 		case 0x03:
-			ram = Array(repeating: 0, count: 32*1024)
+			mbc.ram = Array(repeating: 0, count: 32*1024)
+			mbc.ram_bank_size = 8*1024
+			mbc.ram_enable = true
 		case 0x04:
-			ram = Array(repeating: 0, count: 128*1024)
+			mbc.ram = Array(repeating: 0, count: 128*1024)
+			mbc.ram_bank_size = 8*1024
+			mbc.ram_enable = true
 		case 0x05:
-			ram = Array(repeating: 0, count: 64*1024)
+			mbc.ram = Array(repeating: 0, count: 64*1024)
+			mbc.ram_bank_size = 8*1024
+			mbc.ram_enable = true
 		default:
 			print("unknown ram size!")
 			return nil
@@ -102,8 +110,8 @@ class Cartridge {
 		let mapped_addr = mbc.read_addr(addr: addr)
 		switch addr {
 		case 0xA000...0xBFFF:
-			if ram != nil {
-				return ram![mapped_addr] & 0xFF
+			if mbc.ram != nil {
+				return mbc.ram![mapped_addr] & 0xFF
 			} else {
 				return 0x00
 			}
@@ -113,23 +121,6 @@ class Cartridge {
 	}
 
 	func write(_ addr: Int, _ data: Int) {
-		switch addr {
-		case 0x0000...0x1FFF:
-			mbc.ram_enable = (data == 0x0A)
-		case 0x2000...0x3FFF:
-			mbc.rom_bank = (data & 0x1F) & (~mbc.banks)
-			if mbc.rom_bank == 0 {
-				mbc.rom_bank = 1
-			}
-		case 0x4000...0x5FFF:
-			mbc.secondary_bank = data & 0x03
-		case 0x6000...0x7FFF:
-			mbc.bank_mode = data & 0x01
-		case 0xA000...0xBFFF where ram != nil:
-			let mapped_addr = mbc.write_addr(addr: addr)
-			ram![mapped_addr] = data & 0xFF
-		default:
-			break
-		}
+		mbc.write(addr, data)
 	}
 }

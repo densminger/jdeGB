@@ -21,7 +21,7 @@ class GameEngine: SKScene {
 	var show_code = false
 	var show_tilesets = true
 	
-	var emulation_run = true
+	var emulation_run = false
 	
 	let frame_duration = 1.0/60.0
 	let clock_tick = 1.0/(1024.0*1024.0)

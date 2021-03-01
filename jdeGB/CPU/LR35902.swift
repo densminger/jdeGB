@@ -10,7 +10,7 @@ class LR35902 {
 
 	// Registers
 	var a = 0
-	var f = 0x0F
+	var f = 0
 	var bc = 0
 	var de = 0
 	var hl = 0
@@ -23,7 +23,7 @@ class LR35902 {
 		set(v) {
 			precondition(v & 0xFFFF == v)
 			a = v >> 8
-			f = v & 0xFF
+			f = (v & 0xF0)
 		}
 	}
 	var b: Int {
