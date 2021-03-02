@@ -10,9 +10,15 @@ import Foundation
 class Cartridge {
 	var rom: Array<Int>!
 	var mbc: MBC!
+	
+	let filename: String
+	let ram_filename: String
 
 	init?(from filename: String) {
-		let url = URL(fileURLWithPath: filename)
+		self.filename = filename
+		self.ram_filename = "\(self.filename).ram"
+		
+		let url = URL(fileURLWithPath: self.filename)
 		let data: Data
 		do {
 				data = try Data(contentsOf: url)
@@ -102,6 +108,13 @@ class Cartridge {
 		default:
 			print("unknown ram size!")
 			return nil
+		}
+		
+		mbc.ram_filename = self.ram_filename
+
+		let ram_url = URL(fileURLWithPath: self.ram_filename)
+		if let ram_data = try? Data(contentsOf: ram_url) {
+			mbc.ram = Array(ram_data).map {Int($0)}
 		}
 		
 	}

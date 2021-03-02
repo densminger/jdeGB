@@ -34,6 +34,7 @@ class MBC5: MBC {
 			secondary_bank = data & 0x0F
 		case 0xA000...0xBFFF where ram != nil:
 			ram![secondary_bank * ram_bank_size + (addr - 0xA000)] = data & 0xFF
+			save_ram()
 		default:
 			break
 		}
