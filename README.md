@@ -4,6 +4,9 @@
 
 A Gameboy emulator written in Swift.  Most of the inspiration to do this was based on javidx9's awesome YouTube series for creating a NES emulator in C (https://www.youtube.com/watch?v=nViZg02IMQo&list=PLrOv9FMX8xJHqMvSGB_9G9nZZ_4IgteYf).
 
+![](images/Tetris.jpg)
+![](images/Zelda.jpg)
+
 ## Running the emulator
 
 You can run this from Xcode on macOS.  Be sure to select the Release scheme or it will run too slowly.
