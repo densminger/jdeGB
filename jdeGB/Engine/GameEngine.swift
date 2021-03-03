@@ -20,7 +20,14 @@ class GameEngine: SKScene {
 	var show_cpu = false
 	var show_code = false
 	var show_tilesets = true
-	
+	var show_tilemap = false {
+		didSet {
+			gb.ppu.tile_map_enable = show_tilemap
+		}
+	}
+	var show_gamescreen = true
+	var show_small_gamescreen = false
+
 	var emulation_run = false
 	
 	let frame_duration = 1.0/60.0
@@ -184,6 +191,12 @@ class GameEngine: SKScene {
 			show_code = !show_code
 		} else if keyPressed == 20 {	// 3
 			show_tilesets = !show_tilesets
+		} else if keyPressed == 21 {	// 4
+			show_tilemap = !show_tilemap
+		} else if keyPressed == 23 {	// 5
+			show_gamescreen = !show_gamescreen
+		} else if keyPressed == 22 {	// 6
+			show_small_gamescreen = !show_small_gamescreen
 		} else if keyPressed == 24 {	// + / =
 			emulator_speed += 0.0005
 			if emulator_speed > 1 {
@@ -217,7 +230,12 @@ class GameEngine: SKScene {
 //			print("\(keyPressed!) down")
 		}
 
-		drawPPUScreen()
+		if show_gamescreen {
+			drawPPUScreen()
+		}
+		if show_small_gamescreen {
+			draw_small_PPUScreen(x: 516, y: 264)
+		}
 		if show_cpu {
 			draw_cpu(x: 516, y: 2)
 		}
@@ -226,6 +244,9 @@ class GameEngine: SKScene {
 		}
 		if show_tilesets {
 			draw_tilesets(x: 516, y: 0)
+		}
+		if show_tilemap {
+			draw_tilemap(x: 0, y: 0)
 		}
 	
 		keyPressed = nil
@@ -323,7 +344,33 @@ class GameEngine: SKScene {
 		}
 
 	}
+	
+	func draw_tilemap(x: Int, y: Int) {
+		let f = gb.ppu.tile_map
+		let pattern = SKSpriteNode()
+		pattern.anchorPoint = CGPoint(x: 0, y: 0)
+		pattern.position = CGPoint(x: x, y: y)
+		let size = min(GameEngine.screenSize.width, GameEngine.screenSize.height)
+		pattern.size = CGSize(width: size, height: size)
+		let p = Data(bytesNoCopy: f.pixels.baseAddress!, count: f.pixelCount, deallocator: .none)
+		let texture = SKTexture(data: p, size: CGSize(width: f.width, height: f.height), flipped: true)
+		texture.filteringMode = .nearest
+		pattern.texture = texture
+		node.addChild(pattern)
+	}
 
+	func draw_small_PPUScreen(x: Int, y: Int) {
+		let f = gb.ppu.screen
+		let pattern = SKSpriteNode()
+		pattern.anchorPoint = CGPoint(x: 0, y: 0)
+		pattern.position = CGPoint(x: x, y: y)
+		pattern.size = CGSize(width: 240, height: 216)
+		let p = Data(bytesNoCopy: f.pixels.baseAddress!, count: f.pixelCount, deallocator: .none)
+		let texture = SKTexture(data: p, size: CGSize(width: f.width, height: f.height), flipped: true)
+		texture.filteringMode = .nearest
+		pattern.texture = texture
+		node.addChild(pattern)
+	}
 
 
 }

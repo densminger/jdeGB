@@ -16,6 +16,8 @@ class PPU {
 	var bus: Bus!
 	
 	var screen = Sprite(width: 160, height: 144)
+	var tile_map = Sprite(width: 256, height: 256)
+	var tile_map_enable = false
 	
 	var scanline_sprite_ids = Array<Int>()
 	
@@ -345,6 +347,8 @@ class PPU {
 				let palette_index = ((byte1 & (1 << shift)) >> (shift-1)) | ((byte0 & (1 << shift)) >> shift)
 				bg_color = bg_palette_index(palette_index)
 				screen[x,y] = COLORS[bg_color]
+				let c = get_tint(COLORS[bg_color])
+				tile_map[nx, ny] = c
 			}
 			if sprite_display_enable {
 				for i in scanline_sprite_ids {
@@ -355,16 +359,12 @@ class PPU {
 					let top = spr_y - 16
 					if x >= left && x < right {
 						var tile = get_oam_tile(index: i)
-//						if scanline_sprite_ids.count > 1 { print("\(x),\(y): oam#:\(i) scanline_sprite_ids:\(scanline_sprite_ids)") }
 						if sprite_large {
 							tile &= 0xFE
 							if y-top >= 8 { tile += 1 }
 						}
 						let attr = get_oam_attr(index: i)
 						var sprite_row = y - top
-//						if sprite_row > 7 {
-//							sprite_row = (y - 8) - top
-//						}
 						if attr & 0b0100_0000 > 0 {	// vflip
 							sprite_row = 7 - sprite_row
 							if sprite_large {
@@ -384,9 +384,10 @@ class PPU {
 						}
 						let palette_index = ((byte1 & (1 << shift)) >> (shift-1)) | ((byte0 & (1 << shift)) >> shift)
 						spr_color = spr_palette_index(palette_index, palette: (attr & 0b0001_0000) >> 4)
-//						if tile == 194 || tile == 195 || tile == 210 || tile == 211 { print("x:\(x), y:\(y), spr_x:\(spr_x), spr_y:\(spr_y), tile:\(tile), attr:\(attr), byte1:\(byte1), byte0:\(byte0), sprite_palette_0:\(sprite_palette_0), sprite_palette_1:\(sprite_palette_1), spr_color:\(spr_color), bg_color:\(bg_color)") }
 						if palette_index != 0 && (attr & 0b1000_0000 == 0 || (attr & 0b1000_0000 > 0 && bg_color == 0)) {
 							screen[x,y] = COLORS[spr_color]
+							let c = get_tint(COLORS[spr_color])
+							tile_map[(x + scx) % 256, (y + scy) % 256] = c
 							break
 						}
 					}
@@ -410,7 +411,40 @@ class PPU {
 					let palette_index = ((byte1 & (1 << shift)) >> (shift-1)) | ((byte0 & (1 << shift)) >> shift)
 					window_color = bg_palette_index(palette_index)
 					screen[x,y] = COLORS[window_color]
+					let c = get_tint(COLORS[window_color])
+					tile_map[(x + scx) % 256, (y + scy) % 256] = c
 				}
+			}
+		}
+	}
+	
+	func get_tint(_ c: UInt32) -> UInt32 {
+		let r = c & 0x000000FF
+		let g = (c & 0x0000FF00) >> 8
+		let b = (c & 0x00FF0000) >> 16
+		let rt = r + ((255 - r)/4)
+		let gt = g + ((255 - g)/4)
+		let bt = b + ((255 - b)/4)
+		return 0xFF000000 | (bt << 16) | (gt << 8) | rt
+	}
+	
+	func draw_tilemap() {
+		for y in 0..<256 {
+			for x in 0..<256 {
+				let tilei = (y/8)*32 + x/8
+				let tile = bus.read(0x9800 + (bg_tile_map_display_select * 0x0400) + tilei)
+				let addr: Int
+				if tile > 127 {
+					addr = 0x8800 + ((tile-128)*16) + (2*(y%8))
+				} else {
+					addr = 0x8000 + (tile_data_select == 0 ? 0x1000 : 0) + (tile*16) + (2*(y%8))
+				}
+				let byte1 = bus.read(addr+1)
+				let byte0 = bus.read(addr)
+				let shift = 7-(x%8)
+				let palette_index = ((byte1 & (1 << shift)) >> (shift-1)) | ((byte0 & (1 << shift)) >> shift)
+				let bg_color = bg_palette_index(palette_index)
+				tile_map[x,y] = COLORS[bg_color]
 			}
 		}
 	}
@@ -456,6 +490,11 @@ class PPU {
 					ly = 0
 				}
 			}
+		}
+
+		// for debugging
+		if tile_map_enable && ly == 0 && dot_count == 2 {
+			draw_tilemap()
 		}
 
 		dot_count += 1

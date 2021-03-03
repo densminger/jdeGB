@@ -57,7 +57,7 @@
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
-            key = "file"
+            key = "file1"
             value = "/Users/david/Downloads/Legend of Zelda, The - Link&apos;s Awakening DX (U) (V1.2) [C][!].gbc"
             isEnabled = "YES">
          </EnvironmentVariable>
@@ -107,7 +107,7 @@
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
-            key = "file1"
+            key = "file"
             value = "/Users/david/Downloads/Tennis (JUE) [!].gb"
             isEnabled = "YES">
          </EnvironmentVariable>

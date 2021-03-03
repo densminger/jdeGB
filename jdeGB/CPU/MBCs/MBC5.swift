@@ -13,9 +13,9 @@ class MBC5: MBC {
 			mapped_addr = addr
 		case 0x4000...0x7FFF:
 			mapped_addr = addr + 0x4000 * (rom_bank - 1)
-		case 0xA000...0xBFFF where ram_enable:
+		case 0xA000...0xBFFF where ram != nil:
 			// cart ram address - this does NOT point to the cartridge ROM, but to the RAM instead (a separate array in our case, so the address might overlap with the ROM address)
-			mapped_addr = addr - 0xA000
+			mapped_addr = secondary_bank * ram_bank_size + (addr - 0xA000)
 		default:
 			break
 		}
